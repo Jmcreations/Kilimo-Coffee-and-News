@@ -33,7 +33,6 @@ router.get('/', async (req, res) => {
     const articles = await News.find().sort({ _id: -1 });
     res.status(200).json(articles);
   } catch (err) {
-    console.error('Error fetching news:', err);
     res.status(500).json({ message: 'Failed to fetch news articles', error: err.message });
   }
 });
