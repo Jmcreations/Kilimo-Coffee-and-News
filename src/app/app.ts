@@ -11,5 +11,5 @@ import { NceTicker } from './components/nce-ticker/nce-ticker';
   styleUrl: './app.scss'
 })
 export class AppComponent {
-  title = 'AnCoffee';
+  title = 'Kilimo Coffee and News';
 }
