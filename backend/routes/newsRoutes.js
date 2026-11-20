@@ -18,7 +18,7 @@ module.exports = (upload) => {
                 category: a.category,
                 date: a.date,
                 readTime: a.readTime,
-                snippet: a.snippet,
+                snippet: a.content,
                 contentImage: a.contentImage
             }));
             
@@ -97,6 +97,7 @@ module.exports = (upload) => {
             
             res.status(201).json({ success: true, message: 'Article published successfully!', article: newArticle });
         } catch (err) {
+            console.error('Error publishing news:', err);
             res.status(500).json({ success: false, message: 'Failed to publish article.' });
         }
     });

@@ -1,8 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { Hero } from "../hero/hero";
 import { NewsPreview } from "../news-preview/news-preview";
-import { Header } from "../header/header";
-import { NceTicker } from "../nce-ticker/nce-ticker";
 import { TrustSection } from '../trust-section/trust-section';
 import { NetworkSectionComponent } from "../network-section/network-section";
 import { CoffeeGradesComponent } from "../coffee-grades/coffee-grades";
@@ -14,8 +12,6 @@ import { InquiryPage } from "../inquiry-page/inquiry-page";
   imports: [
     Hero,
     NewsPreview,
-    Header,
-    NceTicker,
     TrustSection,
     NetworkSectionComponent,
     CoffeeGradesComponent,

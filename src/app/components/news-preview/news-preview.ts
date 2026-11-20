@@ -46,7 +46,7 @@ export class NewsPreview implements OnInit {
   getCategoryCover(category: string): string {
     const coverMap: Record<string, string> = {
       'Market Report': '/Images/Market-Report.jpg',
-      'Policy & Trade': '/Images/Trade-Policies.jpg',
+      'Trade Policies': '/Images/Trade-Policies.jpg',
       'Farming Innovation': '/Images/Farming-Innovation.jpg',
       'Cooperative News': '/Images/Cooperative-news.jpg'
     };

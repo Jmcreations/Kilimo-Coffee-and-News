@@ -18,7 +18,16 @@ app.set('trust proxy', 1);
 const MONGO_URI = process.env.MONGO_URI;
 
 // Middleware
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: allowedOrigins.length
+    ? (origin, callback) => callback(null, !origin || allowedOrigins.includes(origin))
+    : true
+}));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
