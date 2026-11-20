@@ -25,6 +25,7 @@ app.use(cors({
   origin: [
     'https://an-coffee-main.vercel.app',
     'https://kilimocoffeeandnews.vercel.app',
+    'https://kilimo-coffee-and-news.vercel.app/',
     /\.vercel\.app$/,
     'http://localhost:4200'
   ],
