@@ -44,8 +44,11 @@ app.get('/', (req, res) => {
 });
 
 // 5. Mount API routes
-app.use('/api/news', newsRoutes);
-app.use('/api/ticker', tickerRoutes);
+const newsHandler = typeof newsRoutes === 'function' ? newsRoutes : (newsRoutes.router || newsRoutes.default);
+const tickerHandler = typeof tickerRoutes === 'function' ? tickerRoutes : (tickerRoutes.router || tickerRoutes.default);
+
+app.use('/api/news', newsHandler);
+app.use('/api/ticker', tickerHandler);
 
 // 6. Connect to MongoDB Atlas
 const mongoUri = process.env.MONGO_URI;
