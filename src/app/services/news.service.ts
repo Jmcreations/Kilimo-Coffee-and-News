@@ -9,7 +9,11 @@ import { environment } from '../../environments/environment';
 export class NewsService {
   private http = inject(HttpClient);
   private baseUrl = environment.apiUrl.replace(/\/+$/, '');
-  private apiUrl = `${this.baseUrl}/news`;
+  private getNormalizedApiBase(): string {
+    const raw = environment.apiUrl.trim().replace(/\/+$/, '');
+    return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  }
+  private apiUrl = `${this.getNormalizedApiBase()}/news`;
 
   getArticles(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
@@ -48,7 +52,7 @@ export class NewsService {
       cleanPath = `/${cleanPath}`;
     }
 
-    const backendBase = environment.apiUrl.replace(/\/api\/?$/, '');
+    const backendBase = this.getNormalizedApiBase().replace(/\/api$/, '');
     return `${backendBase}${cleanPath}`;
   }
 }
