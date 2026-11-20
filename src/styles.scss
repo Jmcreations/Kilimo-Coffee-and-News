@@ -6,7 +6,7 @@
 @theme {
   --font-sans: 'Inter', sans-serif;
   --font-serif: 'Playfair Display', serif;
-  
+
   --color-cream: #FDFCF5;
   --color-coffee-brown: #4B3621;
   --color-kilimo-green: #2E7D32;
@@ -28,9 +28,38 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
   }
 
   h1, h2, h3, h4 {
     font-family: 'Playfair Display', serif;
   }
+
+  .btn-feedback {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-feedback:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(75, 54, 33, 0.2);
+}
+
+.btn-feedback:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.card-feedback {
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-feedback:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px -8px rgba(75, 54, 33, 0.14);
+  border-color: rgba(46, 125, 50, 0.45);
+}
 }

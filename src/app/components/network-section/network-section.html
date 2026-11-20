@@ -1,91 +1,130 @@
-<section id="network" class="py-24 bg-white">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center mb-16">
-      <span class="text-[#2E7D32] text-sm tracking-widest uppercase mb-3 block">Our Verified Network</span>
-      <h2 class="font-serif text-4xl md:text-5xl mb-4 text-[#4B3621]">
+<section class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-[#FDFCF5]">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+      <span class="inline-block text-xs font-semibold uppercase tracking-wider text-[#2E7D32] mb-2">
+        Value Chain Network
+      </span>
+      <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#4B3621] mb-4">
         Connected to Every Link in the Chain
       </h2>
-      <p class="text-lg text-[#333333]/80 max-w-3xl mx-auto">
-        Kilimo News has spent years building verified relationships with licensed dealers, certified brokers,
-        established estates, and registered producers across Kenya's coffee supply chain.
+      <p class="text-sm sm:text-base text-[#333333]/75 leading-relaxed">
+        We bring together producers, millers, licensed dealers, and international buyers on one transparent platform.
       </p>
     </div>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-      @for (partner of networkPartners; track partner.type) {
-        <div
-          class="group relative bg-[#FDFCF5] rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-xl transition-all duration-300 cursor-pointer"
-          (mouseenter)="setHoveredCard(partner.type)"
-          (mouseleave)="setHoveredCard(null)"
-        >
-          <div
-            class="h-3 w-full"
-            [style.backgroundColor]="partner.badgeColor"
-          ></div>
-          
-          <div class="p-6">
-            <div class="flex items-start justify-between mb-4">
-              <div class="text-4xl">{{ partner.icon }}</div>
-              <span
-                class="text-xs px-2 py-1 rounded text-white"
-                [style.backgroundColor]="partner.badgeColor"
-              >
-                {{ partner.badge }}
-              </span>
-            </div>
-            
-            <div class="mb-1">
-              <span class="text-xs text-[#333333]/50 uppercase tracking-widest">{{ partner.type }}</span>
-            </div>
-            
-            <h3 class="font-serif text-xl text-[#4B3621] mb-2">{{ partner.name }}</h3>
-            
-            <!-- Default View -->
-            <div
-              class="transition-all duration-300"
-              [class.opacity-0]="hoveredCard === partner.type"
-              [class.max-h-0]="hoveredCard === partner.type"
-              [class.overflow-hidden]="hoveredCard === partner.type"
-              [class.opacity-100]="hoveredCard !== partner.type"
-            >
-              <p class="text-[#333333]/70 text-sm leading-relaxed">{{ partner.description }}</p>
-              <div class="mt-4 pt-4 border-t border-[#4B3621]/10">
-                <span class="text-[#2E7D32] font-semibold">{{ partner.count }}</span>
-                <span class="text-[#333333]/50 text-sm ml-1">in our network</span>
-              </div>
-            </div>
+    <!-- 4 Stakeholder Cards (1 col phone, 2 col tablet, 4 col desktop) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 mb-10 sm:mb-12">
 
-            <!-- Hover View -->
-            <div
-              class="transition-all duration-300"
-              [class.opacity-100]="hoveredCard === partner.type"
-              [class.max-h-96]="hoveredCard === partner.type"
-              [class.opacity-0]="hoveredCard !== partner.type"
-              [class.max-h-0]="hoveredCard !== partner.type"
-              [class.overflow-hidden]="hoveredCard !== partner.type"
-            >
-              <p class="text-[#333333]/80 text-sm leading-relaxed mb-4">{{ partner.detail }}</p>
-              <a
-                href="#inquire"
-                class="inline-block text-sm px-4 py-2 rounded text-white transition-colors"
-                [style.backgroundColor]="partner.badgeColor"
-              >
-                Connect with {{ partner.type }}s
-              </a>
-            </div>
+      <!-- Card 1 -->
+      <div class="card-feedback bg-white rounded-2xl border border-[#4B3621]/10 p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <span class="w-10 h-10 rounded-xl bg-[#2E7D32]/10 text-[#2E7D32] flex items-center justify-center font-serif font-bold">
+              01
+            </span>
+            <span class="text-[11px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-[#2E7D32]/10 text-[#2E7D32]">
+              Producers
+            </span>
           </div>
+          <h3 class="font-serif text-lg font-semibold text-[#4B3621] mb-2">
+            Estates &amp; Smallholders
+          </h3>
+          <p class="text-sm text-[#333333]/75 leading-relaxed mb-4">
+            Direct visibility into weekly auction realizations, agronomic best practices, and regional price benchmarks.
+          </p>
         </div>
-      }
+        <span class="text-xs font-medium text-[#2E7D32]">● Farm-gate transparency</span>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card-feedback bg-white rounded-2xl border border-[#4B3621]/10 p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <span class="w-10 h-10 rounded-xl bg-[#4B3621]/10 text-[#4B3621] flex items-center justify-center font-serif font-bold">
+              02
+            </span>
+            <span class="text-[11px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-[#4B3621]/10 text-[#4B3621]">
+              Cooperatives
+            </span>
+          </div>
+          <h3 class="font-serif text-lg font-semibold text-[#4B3621] mb-2">
+            Societies &amp; Millers
+          </h3>
+          <p class="text-sm text-[#333333]/75 leading-relaxed mb-4">
+            Showcase outturn quality, connect wet mills with verified marketing agents, and track grade performance.
+          </p>
+        </div>
+        <span class="text-xs font-medium text-[#4B3621]">● Quality-driven milling</span>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card-feedback bg-white rounded-2xl border border-[#4B3621]/10 p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <span class="w-10 h-10 rounded-xl bg-[#4B3621]/10 text-[#4B3621] flex items-center justify-center font-serif font-bold">
+              03
+            </span>
+            <span class="text-[11px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-[#4B3621]/10 text-[#4B3621]">
+              Dealers
+            </span>
+          </div>
+          <h3 class="font-serif text-lg font-semibold text-[#4B3621] mb-2">
+            Licensed Exporters
+          </h3>
+          <p class="text-sm text-[#333333]/75 leading-relaxed mb-4">
+            Streamlined sourcing of traceable AA, AB, and PB lots backed by verified regulatory compliance.
+          </p>
+        </div>
+        <span class="text-xs font-medium text-[#4B3621]">● NCE auction access</span>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card-feedback bg-white rounded-2xl border border-[#4B3621]/10 p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <span class="w-10 h-10 rounded-xl bg-[#2E7D32]/10 text-[#2E7D32] flex items-center justify-center font-serif font-bold">
+              04
+            </span>
+            <span class="text-[11px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full bg-[#2E7D32]/10 text-[#2E7D32]">
+              Buyers
+            </span>
+          </div>
+          <h3 class="font-serif text-lg font-semibold text-[#4B3621] mb-2">
+            Global Roasters
+          </h3>
+          <p class="text-sm text-[#333333]/75 leading-relaxed mb-4">
+            Source single-origin Kenyan specialty coffees with full lot traceability and reliable seasonal delivery schedules.
+          </p>
+        </div>
+        <span class="text-xs font-medium text-[#2E7D32]">● Direct origin sourcing</span>
+      </div>
+
     </div>
 
-    <!-- Stats Grid -->
-    <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-      @for (stat of stats; track stat.label) {
-        <div class="bg-[#4B3621] rounded-lg py-6 px-4">
-          <div class="font-serif text-3xl text-white mb-1">{{ stat.value }}</div>
-          <div class="text-white/60 text-sm">{{ stat.label }}</div>
-        </div>
-      }
+    <!-- 4 Stat Boxes (2x2 on phones, 4 across on desktop) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div class="bg-[#4B3621] text-white rounded-2xl p-6 text-center shadow-xs">
+        <div class="font-serif text-2xl sm:text-3xl font-bold mb-1">450+</div>
+        <div class="text-xs sm:text-sm text-white/80">Coffee Estates</div>
+      </div>
+
+      <div class="bg-[#4B3621] text-white rounded-2xl p-6 text-center shadow-xs">
+        <div class="font-serif text-2xl sm:text-3xl font-bold mb-1">85+</div>
+        <div class="text-xs sm:text-sm text-white/80">Partner Cooperatives</div>
+      </div>
+
+      <div class="bg-[#4B3621] text-white rounded-2xl p-6 text-center shadow-xs">
+        <div class="font-serif text-2xl sm:text-3xl font-bold mb-1">180+</div>
+        <div class="text-xs sm:text-sm text-white/80">Global Buyers</div>
+      </div>
+
+      <div class="bg-[#4B3621] text-white rounded-2xl p-6 text-center shadow-xs">
+        <div class="font-serif text-2xl sm:text-3xl font-bold mb-1">14+</div>
+        <div class="text-xs sm:text-sm text-white/80">Coffee Regions</div>
+      </div>
     </div>
+
   </div>
 </section>

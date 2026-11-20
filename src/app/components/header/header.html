@@ -1,20 +1,76 @@
-<header class="fixed top-[40px] left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#4B3621]/10">
-  <nav class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a routerLink="/" aria-label="Go to home page" class="flex items-center gap-2">
-      <img src="/logo.jpeg" alt="" class="h-10 w-10 rounded-full object-cover">
-      <span class="font-serif text-2xl text-[#4B3621]">Kilimo Coffee and News</span>
+<nav class="bg-white/95 backdrop-blur-md border-b border-[#4B3621]/10 px-4 sm:px-6 lg:px-8 py-3">
+  <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+
+    <!-- Brand Logo & Title -->
+    <a routerLink="/" (click)="closeMenu()" class="flex items-center gap-2.5 shrink-0 group">
+      <img
+        src="/logo.jpeg"
+        alt="Kilimo Coffee and News"
+        class="h-9 w-9 sm:h-10 sm:w-10 rounded-full object-cover border border-[#4B3621]/15 transition-transform duration-300 group-hover:scale-105"
+      />
+      <span class="font-serif text-base sm:text-xl font-semibold text-[#4B3621] whitespace-nowrap">
+        Kilimo Coffee &amp; News
+      </span>
     </a>
 
-    <div class="hidden md:flex items-center gap-8">
-      <a routerLink="/all-news" class="text-[#333333] hover:text-[#4B3621] transition-colors">News</a>
-      <a routerLink="/" fragment="about" class="text-[#333333] hover:text-[#4B3621] transition-colors">About Us</a>
-      <a routerLink="/" fragment="origins" class="text-[#333333] hover:text-[#4B3621] transition-colors">Coffee Grades</a>
-      <a routerLink="/" fragment="marketplace" class="text-[#333333] hover:text-[#4B3621] transition-colors">Market Data</a>
-      <a routerLink="/" fragment="inquire" class="text-[#333333] hover:text-[#4B3621] transition-colors">Contact</a>
+    <!-- Desktop Links -->
+    <div class="hidden lg:flex items-center gap-7 text-sm font-medium text-[#333333]">
+      <a routerLink="/all-news" class="hover:text-[#2E7D32] transition-colors">News</a>
+      <a href="#about" class="hover:text-[#2E7D32] transition-colors">About Us</a>
+      <a href="#grades" class="hover:text-[#2E7D32] transition-colors">Coffee Grades</a>
+      <a href="#market" class="hover:text-[#2E7D32] transition-colors">Market Data</a>
+      <a href="#contact" class="hover:text-[#2E7D32] transition-colors">Contact</a>
     </div>
 
-    <button routerLink="/login" class="bg-[#2E7D32] text-white px-6 py-2.5 rounded-md hover:bg-[#2E7D32]/90 transition-colors">
-      Premium Login / Register
+    <!-- Desktop CTA Button -->
+    <div class="hidden lg:block shrink-0">
+      <a
+        routerLink="/login"
+        class="inline-flex items-center justify-center bg-[#2E7D32] hover:bg-[#256628] text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap">
+        Premium Login / Register
+      </a>
+    </div>
+
+    <!-- Mobile / Tablet Hamburger Button -->
+    <button
+      type="button"
+      (click)="toggleMenu()"
+      class="lg:hidden p-2 rounded-lg text-[#4B3621] hover:bg-[#4B3621]/10 active:scale-95 transition-all cursor-pointer"
+      aria-label="Toggle navigation menu">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        @if (!mobileMenuOpen) {
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        } @else {
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        }
+      </svg>
     </button>
-  </nav>
-</header>
+  </div>
+
+  <!-- Mobile Dropdown Menu -->
+  @if (mobileMenuOpen) {
+    <div class="lg:hidden mt-3 pt-3 pb-2 border-t border-[#4B3621]/10 flex flex-col gap-1.5">
+      <a routerLink="/all-news" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
+        News
+      </a>
+      <a href="#about" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
+        About Us
+      </a>
+      <a href="#grades" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
+        Coffee Grades
+      </a>
+      <a href="#market" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
+        Market Data
+      </a>
+      <a href="#contact" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
+        Contact
+      </a>
+      <a
+        routerLink="/login"
+        (click)="closeMenu()"
+        class="mt-2 text-center bg-[#2E7D32] hover:bg-[#256628] text-white font-medium py-3 rounded-lg shadow-xs transition-colors">
+        Premium Login / Register
+      </a>
+    </div>
+  }
+</nav>

@@ -11,6 +11,22 @@
         <h1 class="font-serif text-4xl text-[#4B3621]">All Coffee News & Reports</h1>
       </div>
 
+      @if (loading) {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @for (skeleton of [1, 2, 3]; track skeleton) {
+      <div class="bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden animate-pulse">
+        <div class="h-52 w-full bg-[#4B3621]/10"></div>
+        <div class="p-6 space-y-3">
+          <div class="h-4 w-24 rounded-full bg-[#2E7D32]/20"></div>
+          <div class="h-6 w-4/5 rounded bg-[#4B3621]/15"></div>
+          <div class="h-4 w-full rounded bg-[#4B3621]/10"></div>
+          <div class="h-4 w-2/3 rounded bg-[#4B3621]/10"></div>
+        </div>
+      </div>
+    }
+  </div>
+}
+
       <!-- Category Filter Pills -->
       <div class="flex flex-wrap gap-2">
         <button
