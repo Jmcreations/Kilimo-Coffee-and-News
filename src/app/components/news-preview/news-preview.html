@@ -19,9 +19,9 @@
 
     <!-- Featured Articles Grid -->
     <div class="grid md:grid-cols-2 gap-8 mb-8">
-      @for (article of featuredArticles; track article.id) {
+      @for (article of featuredArticles; track article._id || article.id) {
         <article
-        [routerLink]="['/news', article.id]"
+        [routerLink]="['/news', article._id || article.id]"
         class="group bg-white rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-xl transition-all duration-300 cursor-pointer">
           <div class="relative h-64 overflow-hidden">
             <img
@@ -52,7 +52,7 @@
             <p class="text-[#333333]/80 mb-4 line-clamp-2">
               {{ article.content }}
             </p>
-            <div [routerLink]="['/news', article.id]" class="flex items-center gap-2 text-[#2E7D32] group-hover:gap-3 transition-all">
+            <div [routerLink]="['/news', article._id || article.id]" class="flex items-center gap-2 text-[#2E7D32] group-hover:gap-3 transition-all">
               <span>Read More</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </div>
@@ -63,9 +63,9 @@
 
     <!-- Regular Articles Grid -->
     <div class="grid md:grid-cols-3 gap-6">
-      @for (article of regularArticles; track article.id) {
+      @for (article of regularArticles; track article._id || article.id) {
         <article
-        [routerLink]="['/news', article._id || article.id]"
+        [routerLink]="['/news', article._id || article._id || article.id]"
         class="group bg-[#FDFCF5] rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-lg transition-all duration-300 cursor-pointer">
           <div class="relative h-48 overflow-hidden">
             <!-- UPDATED IMAGE TAG HERE -->

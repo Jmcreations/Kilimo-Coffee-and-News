@@ -31,7 +31,7 @@
     <div class="grid md:grid-cols-3 gap-6">
       <article
         *ngFor="let article of filteredArticles"
-        [routerLink]="['/news', article._id || article.id]"
+        [routerLink]="['/news', article._id || article._id || article.id]"
         [queryParams]="{ from: 'all'}"
         class="group bg-white rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col justify-between"
       >
