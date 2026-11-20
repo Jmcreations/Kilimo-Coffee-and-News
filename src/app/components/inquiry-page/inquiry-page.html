@@ -1,0 +1,140 @@
+<section id="inquire" class="py-24 bg-[#FDFCF5]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <h2 class="font-serif text-4xl md:text-5xl mb-4 text-[#4B3621]">
+        Get In Touch
+      </h2>
+      <p class="text-lg text-[#333333]/80 max-w-2xl mx-auto">
+        Connect with our team to purchase coffee or explore consulting services, training programs, and partnership opportunities.
+      </p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 gap-12 items-start">
+      <!-- Left Side: Image and Services -->
+      <div>
+        <img
+          src="https://images.unsplash.com/photo-1714974528718-b3b52f91c334?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
+          alt="Kilimo Coffee Experts"
+          class="rounded-lg shadow-lg w-full h-[400px] object-cover"
+        />
+        <div class="mt-6 bg-white p-6 rounded-lg border border-[#4B3621]/10">
+          <h3 class="font-serif text-xl text-[#4B3621] mb-4">Our Services</h3>
+          <ul class="space-y-3">
+            @for (service of services; track service) {
+              <li class="flex items-start gap-2">
+                <svg class="h-5 w-5 text-[#2E7D32] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-[#333333]/80">{{ service }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <!-- Right Side: Contact Form -->
+      <div class="bg-white p-8 rounded-lg shadow-lg border border-[#4B3621]/10">
+        <form (ngSubmit)="handleSubmit()" #inquiryForm="ngForm" class="space-y-5">
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="fullName" class="block text-[#333333] mb-2">Full Name *</label>
+              <input type="text" id="fullName" name="fullName" [(ngModel)]="formData.fullName" required
+                class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white" />
+            </div>
+            <div>
+              <label for="companyName" class="block text-[#333333] mb-2">Company (Optional)</label>
+              <input type="text" id="companyName" name="companyName" [(ngModel)]="formData.companyName"
+                class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white" />
+            </div>
+          </div>
+          
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="country" class="block text-[#333333] mb-2">Country *</label>
+              <input type="text" id="country" name="country" autocomplete="country" [(ngModel)]="formData.country" required
+                class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white" />
+            </div>
+            <div>
+              <label for="email" class="block text-[#333333] mb-2">Email *</label>
+              <input type="email" id="email" name="email" autocomplete="email" [(ngModel)]="formData.email" required
+                class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white" />
+            </div>
+          </div>
+
+          <div class="border-t border-[#4B3621]/10 pt-5">
+            <h4 class="font-serif text-[#4B3621] mb-4">Coffee Requirements</h4>
+            <div class="space-y-5">
+              <div class="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label for="beanType" class="block text-[#333333] mb-2">Type of Coffee *</label>
+                  <select id="beanType" name="beanType" [(ngModel)]="formData.beanType" required
+                    class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white">
+                    <option value="">Select type</option>
+                    <option value="green">Green Beans (Unroasted)</option>
+                    <option value="roasted">Roasted Beans</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="grade" class="block text-[#333333] mb-2">Preferred Grade *</label>
+                  <select id="grade" name="grade" [(ngModel)]="formData.grade" required
+                    class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white">
+                    <option value="">Select grade</option>
+                    <option value="AA">AA - Premium</option>
+                    <option value="AB">AB - Premium</option>
+                    <option value="PB">PB (Peaberry) - Premium</option>
+                    <option value="E">E (Elephant) - Rare</option>
+                    <option value="C">C - Standard</option>
+                    <option value="TT">TT - Light</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label for="volume" class="block text-[#333333] mb-2">Volume Required *</label>
+                  <select id="volume" name="volume" [(ngModel)]="formData.volume" required
+                    class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white">
+                    <option value="">Select volume</option>
+                    <option value="1-5">1 - 5 MT</option>
+                    <option value="5-20">5 - 20 MT</option>
+                    <option value="20-50">20 - 50 MT</option>
+                    <option value="50-100">50 - 100 MT</option>
+                    <option value="100+">100+ MT</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="destination" class="block text-[#333333] mb-2">Destination *</label>
+                  <input type="text" id="destination" name="destination" [(ngModel)]="formData.destination" required placeholder="e.g. Hamburg, Germany"
+                    class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label for="message" class="block text-[#333333] mb-2">Additional Notes</label>
+            <textarea id="message" name="message" [(ngModel)]="formData.message" rows="3" placeholder="Any specific requirements, certifications needed, packaging preferences..."
+              class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white resize-none"></textarea>
+          </div>
+
+          <!-- Added some disabled state styling so the user knows they must fill required fields -->
+          <button type="submit" [disabled]="!inquiryForm.form.valid" class="w-full bg-[#2E7D32] text-white px-8 py-4 rounded-md hover:bg-[#2E7D32]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Submit Inquiry
+          </button>
+
+          @if (submitted) {
+            <div class="mt-4 p-4 bg-[#2E7D32]/10 border border-[#2E7D32]/30 rounded-md flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-[#2E7D32] flex-shrink-0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div>
+                <div class="text-[#2E7D32]">Inquiry received!</div>
+                <div class="text-sm text-[#333333]/70">
+                  A Kilimo News team member will reach out within 24 hours.
+                </div>
+              </div>
+            </div>
+          }
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

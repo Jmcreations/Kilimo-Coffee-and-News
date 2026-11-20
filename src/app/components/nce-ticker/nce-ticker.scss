@@ -1,0 +1,14 @@
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  display: inline-flex;
+  animation: ticker-scroll 50s linear infinite;
+  white-space: nowrap;
+
+  &:hover {
+    animation-play-state: paused;
+  }
+}

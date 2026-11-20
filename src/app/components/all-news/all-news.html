@@ -1,0 +1,78 @@
+<section class="py-16 bg-[#FDFCF5] min-h-screen">
+  <div class="max-w-7xl mx-auto px-6">
+    
+    <!-- Top Bar -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+      <div>
+        <a routerLink="/" class="inline-flex items-center gap-2 text-[#2E7D32] hover:text-[#2E7D32]/80 mb-3 font-medium transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Back Home
+        </a>
+        <h1 class="font-serif text-4xl text-[#4B3621]">All Coffee News & Reports</h1>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex flex-wrap gap-2">
+        <button 
+          *ngFor="let cat of categories" 
+          (click)="filterByCategory(cat)"
+          [class.bg-[#2E7D32]]="selectedCategory === cat"
+          [class.text-white]="selectedCategory === cat"
+          [class.bg-white]="selectedCategory !== cat"
+          [class.text-[#4B3621]]="selectedCategory !== cat"
+          class="px-4 py-2 rounded-full text-xs font-medium border border-[#4B3621]/10 transition-colors shadow-sm"
+        >
+          {{ cat }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid of All Articles -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <article 
+        *ngFor="let article of filteredArticles" 
+        [routerLink]="['/news', article.id]" 
+        [queryParams]="{ from: 'all'}"
+        class="group bg-white rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col justify-between"
+      >
+        <div>
+          <div class="relative h-48 overflow-hidden">
+            <img [src]="newsService.getImageUrl(article.contentImage, article.category)" 
+            [alt]="article.title" ... />
+            <div class="absolute top-3 left-3">
+              <span class="bg-[#2E7D32] text-white text-xs px-2.5 py-1 rounded-full font-medium">
+                {{ article.category }}
+              </span>
+            </div>
+          </div>
+          <div class="p-5">
+            <div class="flex items-center gap-3 text-xs text-[#333333]/60 mb-2">
+              <span>{{ article.date }}</span>
+              <span>•</span>
+              <span>{{ article.readTime }}</span>
+            </div>
+            <h2 class="font-serif text-lg text-[#4B3621] mb-2 group-hover:text-[#2E7D32] transition-colors line-clamp-2">
+              {{ article.title }}
+            </h2>
+            <p class="text-sm text-[#333333]/70 line-clamp-3 mb-4">
+              {{ article.content }}
+            </p>
+          </div>
+        </div>
+
+        <div class="px-5 pb-5 pt-0">
+          <div class="flex items-center gap-2 text-sm text-[#2E7D32] font-semibold">
+            <span>Read Full Report</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && filteredArticles.length === 0" class="text-center py-20 text-[#333333]/60">
+      No articles found in this category.
+    </div>
+
+  </div>
+</section>

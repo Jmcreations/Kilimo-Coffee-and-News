@@ -1,0 +1,76 @@
+<section id="origins" class="py-24 bg-[#FDFCF5]">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="font-serif text-4xl md:text-5xl mb-4 text-[#4B3621]">
+        Discover Kenyan Coffee Excellence
+      </h2>
+      <p class="text-lg text-[#333333]/80 max-w-3xl mx-auto">
+        Kenya's coffee grading system is renowned worldwide for its precision and quality standards.
+        Each grade represents unique characteristics and flavor profiles.
+      </p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for (coffee of coffeeGrades; track coffee.grade) {
+        <div
+          class="group relative bg-white rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-xl transition-all duration-300 cursor-pointer"
+          (mouseenter)="setHoveredGrade(coffee.grade)"
+          (mouseleave)="setHoveredGrade(null)"
+        >
+          <div class="relative h-48 overflow-hidden">
+            <img
+              [src]="coffee.image"
+              [alt]="'Coffee grade ' + coffee.grade"
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div class="absolute bottom-4 left-4">
+              <div class="flex items-center gap-2">
+                <h3 class="font-serif text-3xl text-white">Grade {{ coffee.grade }}</h3>
+                @if (coffee.premium) {
+                  <span class="bg-[#2E7D32] text-white text-xs px-2 py-1 rounded">Premium</span>
+                }
+              </div>
+            </div>
+          </div>
+          
+          <div class="p-6">
+            <!-- Hover View (Details) -->
+            <div
+              class="transition-all duration-300"
+              [class.opacity-100]="hoveredGrade === coffee.grade"
+              [class.max-h-96]="hoveredGrade === coffee.grade"
+              [class.opacity-0]="hoveredGrade !== coffee.grade"
+              [class.max-h-0]="hoveredGrade !== coffee.grade"
+              [class.overflow-hidden]="hoveredGrade !== coffee.grade"
+            >
+              <div class="mb-4">
+                <div class="text-sm text-[#333333]/60 mb-1">Screen Size</div>
+                <div class="text-[#4B3621]">{{ coffee.screenSize }}</div>
+              </div>
+              <div class="mb-4">
+                <div class="text-sm text-[#333333]/60 mb-1">Flavor Profile</div>
+                <div class="text-[#333333]/80 text-sm">{{ coffee.flavor }}</div>
+              </div>
+              <div>
+                <div class="text-sm text-[#333333]/60 mb-1">Typical Region</div>
+                <div class="text-[#4B3621] text-sm">{{ coffee.region }}</div>
+              </div>
+            </div>
+            
+            <!-- Default View -->
+            <div
+              class="transition-all duration-300"
+              [class.opacity-0]="hoveredGrade === coffee.grade"
+              [class.max-h-0]="hoveredGrade === coffee.grade"
+              [class.overflow-hidden]="hoveredGrade === coffee.grade"
+              [class.opacity-100]="hoveredGrade !== coffee.grade"
+            >
+              <p class="text-[#333333]/60 text-sm">Hover to see details</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

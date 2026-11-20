@@ -1,0 +1,91 @@
+<section id="network" class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <span class="text-[#2E7D32] text-sm tracking-widest uppercase mb-3 block">Our Verified Network</span>
+      <h2 class="font-serif text-4xl md:text-5xl mb-4 text-[#4B3621]">
+        Connected to Every Link in the Chain
+      </h2>
+      <p class="text-lg text-[#333333]/80 max-w-3xl mx-auto">
+        Kilimo News has spent years building verified relationships with licensed dealers, certified brokers,
+        established estates, and registered producers across Kenya's coffee supply chain.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for (partner of networkPartners; track partner.type) {
+        <div
+          class="group relative bg-[#FDFCF5] rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-xl transition-all duration-300 cursor-pointer"
+          (mouseenter)="setHoveredCard(partner.type)"
+          (mouseleave)="setHoveredCard(null)"
+        >
+          <div
+            class="h-3 w-full"
+            [style.backgroundColor]="partner.badgeColor"
+          ></div>
+          
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="text-4xl">{{ partner.icon }}</div>
+              <span
+                class="text-xs px-2 py-1 rounded text-white"
+                [style.backgroundColor]="partner.badgeColor"
+              >
+                {{ partner.badge }}
+              </span>
+            </div>
+            
+            <div class="mb-1">
+              <span class="text-xs text-[#333333]/50 uppercase tracking-widest">{{ partner.type }}</span>
+            </div>
+            
+            <h3 class="font-serif text-xl text-[#4B3621] mb-2">{{ partner.name }}</h3>
+            
+            <!-- Default View -->
+            <div
+              class="transition-all duration-300"
+              [class.opacity-0]="hoveredCard === partner.type"
+              [class.max-h-0]="hoveredCard === partner.type"
+              [class.overflow-hidden]="hoveredCard === partner.type"
+              [class.opacity-100]="hoveredCard !== partner.type"
+            >
+              <p class="text-[#333333]/70 text-sm leading-relaxed">{{ partner.description }}</p>
+              <div class="mt-4 pt-4 border-t border-[#4B3621]/10">
+                <span class="text-[#2E7D32] font-semibold">{{ partner.count }}</span>
+                <span class="text-[#333333]/50 text-sm ml-1">in our network</span>
+              </div>
+            </div>
+
+            <!-- Hover View -->
+            <div
+              class="transition-all duration-300"
+              [class.opacity-100]="hoveredCard === partner.type"
+              [class.max-h-96]="hoveredCard === partner.type"
+              [class.opacity-0]="hoveredCard !== partner.type"
+              [class.max-h-0]="hoveredCard !== partner.type"
+              [class.overflow-hidden]="hoveredCard !== partner.type"
+            >
+              <p class="text-[#333333]/80 text-sm leading-relaxed mb-4">{{ partner.detail }}</p>
+              <a
+                href="#inquire"
+                class="inline-block text-sm px-4 py-2 rounded text-white transition-colors"
+                [style.backgroundColor]="partner.badgeColor"
+              >
+                Connect with {{ partner.type }}s
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      @for (stat of stats; track stat.label) {
+        <div class="bg-[#4B3621] rounded-lg py-6 px-4">
+          <div class="font-serif text-3xl text-white mb-1">{{ stat.value }}</div>
+          <div class="text-white/60 text-sm">{{ stat.label }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

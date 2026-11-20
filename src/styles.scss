@@ -1,0 +1,36 @@
+/* Tailwind v4 Import */
+@import "tailwindcss/theme.css";
+@import "tailwindcss/preflight.css";
+@import "tailwindcss/utilities.css";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  
+  --color-cream: #FDFCF5;
+  --color-coffee-brown: #4B3621;
+  --color-kilimo-green: #2E7D32;
+  --color-dark-grey: #333333;
+}
+
+@layer base {
+  :root {
+    --font-size: 16px;
+    --background: #FDFCF5;
+    --foreground: #333333;
+  }
+
+  html {
+    font-size: var(--font-size);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+  }
+}

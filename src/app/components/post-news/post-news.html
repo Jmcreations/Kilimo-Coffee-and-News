@@ -1,0 +1,109 @@
+<div class="min-h-screen bg-[#FDFCF5] pt-24 pb-16 px-6">
+  <div class="max-w-3xl mx-auto">
+    
+    <!-- Top Navigation Bar -->
+    <div class="flex items-center justify-between mb-8 pb-4 border-b border-[#4B3621]/10">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#4B3621]"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg>
+        <h1 class="font-serif text-2xl text-[#4B3621]">Publish News Update</h1>
+      </div>
+      <a routerLink="/" class="text-sm text-[#2E7D32] hover:underline font-medium">&larr; Back to Portal</a>
+    </div>
+
+    <!-- Form Container -->
+    <div class="bg-white p-8 rounded-lg shadow-md border border-[#4B3621]/10">
+      <form (ngSubmit)="publishArticle()" #newsForm="ngForm" class="space-y-6">
+        
+        <!-- Article Title -->
+        <div>
+          <label for="title" class="block text-sm font-medium text-[#333333] mb-2">Article Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            [(ngModel)]="articleData.title" 
+            required
+            placeholder="e.g. Nyeri Farmers Cooperatives Announce Record Premium Payouts"
+            class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white"
+          />
+        </div>
+
+        <!-- Category & Read Time -->
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div>
+            <label for="category" class="block text-sm font-medium text-[#333333] mb-2">Category *</label>
+            <select 
+              id="category" 
+              name="category" 
+              [(ngModel)]="articleData.category" 
+              required
+              class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white"
+            >
+              <option value="Market Report">Market Report</option>
+              <option value="Trade Policies">Trade Policies</option>
+              <option value="Farming Innovation">Farming Innovation</option>
+              <option value="Cooperative News">Cooperative News</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="readTime" class="block text-sm font-medium text-[#333333] mb-2">Estimated Read Time</label>
+            <input 
+              type="text" 
+              id="readTime" 
+              name="readTime" 
+              [(ngModel)]="articleData.readTime" 
+              placeholder="e.g. 3 min read"
+              class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white"
+            />
+          </div>
+        </div>
+
+        <!--Image Upload -->
+        <div>
+          <label for="imageFile" class="block text-sm font-medium text-[#333333] mb-2">Upload Image for Article (Optional)</label>
+          <input 
+            type="file" 
+            id="imageFile" 
+            (change)="onFileSelected($event)"
+            accept="image/*"
+            class="w-full px-4 py-2 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-[#2E7D32]/10 file:text-[#2E7D32] hover:file:bg-[#2E7D32]/20"
+          />
+        </div>
+
+        <!-- Article Snippet / Body -->
+        <div>
+          <label for="snippet" class="block text-sm font-medium text-[#333333] mb-2">Summary / Content *</label>
+          <textarea 
+            id="snippet" 
+            name="snippet" 
+            [(ngModel)]="articleData.content" 
+            required 
+            rows="5"
+            placeholder="Write the full announcement or brief news summary here..."
+            class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          [disabled]="!newsForm.form.valid || submitting"
+          class="w-full bg-[#2E7D32] text-white px-8 py-3.5 rounded-md hover:bg-[#2E7D32]/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {{ submitting ? 'Publishing Post...' : 'Publish News Post' }}
+        </button>
+
+        <!-- Success Toast -->
+        @if (successMessage) {
+          <div class="p-4 bg-[#2E7D32]/10 border border-[#2E7D32]/30 rounded-md flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#2E7D32]"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span class="text-[#2E7D32] text-sm font-medium">Article published! Redirecting to home feed...</span>
+          </div>
+        }
+
+      </form>
+    </div>
+
+  </div>
+</div>
