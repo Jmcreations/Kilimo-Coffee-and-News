@@ -65,7 +65,7 @@
     <div class="grid md:grid-cols-3 gap-6">
       @for (article of regularArticles; track article.id) {
         <article
-        [routerLink]="['/news', article.id]"
+        [routerLink]="['/news', article._id || article.id]"
         class="group bg-[#FDFCF5] rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-lg transition-all duration-300 cursor-pointer">
           <div class="relative h-48 overflow-hidden">
             <!-- UPDATED IMAGE TAG HERE -->

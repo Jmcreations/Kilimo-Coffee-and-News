@@ -1,6 +1,6 @@
 <section class="pt-[115px] pb-16 bg-[#FDFCF5] min-h-screen">
   <div class="max-w-7xl mx-auto px-6">
-    
+
     <!-- Top Bar -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
       <div>
@@ -13,8 +13,8 @@
 
       <!-- Category Filter Pills -->
       <div class="flex flex-wrap gap-2">
-        <button 
-          *ngFor="let cat of categories" 
+        <button
+          *ngFor="let cat of categories"
           (click)="filterByCategory(cat)"
           [class.bg-[#2E7D32]]="selectedCategory === cat"
           [class.text-white]="selectedCategory === cat"
@@ -29,15 +29,15 @@
 
     <!-- Grid of All Articles -->
     <div class="grid md:grid-cols-3 gap-6">
-      <article 
-        *ngFor="let article of filteredArticles" 
-        [routerLink]="['/news', article.id]" 
+      <article
+        *ngFor="let article of filteredArticles"
+        [routerLink]="['/news', article._id || article.id]"
         [queryParams]="{ from: 'all'}"
         class="group bg-white rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col justify-between"
       >
         <div>
           <div class="relative h-48 overflow-hidden">
-            <img [src]="newsService.getImageUrl(article.contentImage, article.category)" 
+            <img [src]="newsService.getImageUrl(article.contentImage, article.category)"
             [alt]="article.title" ... />
             <div class="absolute top-3 left-3">
               <span class="bg-[#2E7D32] text-white text-xs px-2.5 py-1 rounded-full font-medium">

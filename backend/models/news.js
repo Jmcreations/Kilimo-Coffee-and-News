@@ -9,5 +9,5 @@ const newsSchema = new mongoose.Schema({
     contentImage: { type: String, default: null }, // The uploaded supporting image
     author: { type: String, default: 'Henry Kinyua' }
 });
-
+newsSchema.set('toJSON', { virtuals: true });
 module.exports = mongoose.model('News', newsSchema);
