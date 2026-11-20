@@ -1,80 +1,63 @@
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
-const path = require('path');
-const dotenv = require('dotenv');
 
-// Capture exactly what dotenv is doing
-dotenv.config({ path: path.join(__dirname, '.env') });
-
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const multer = require('multer');
-const fs = require('fs');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
+
+const newsRoutes = require('./routes/newsRoutes');
+const tickerRoutes = require('./routes/ticker');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.set('trust proxy', 1);
 
-// MongoDB Connection
-const MONGO_URI = process.env.MONGO_URI;
-
-// Middleware
-const allowedOrigins = (process.env.CORS_ORIGIN || '')
-  .split(',')
-  .map(origin => origin.trim())
-  .filter(Boolean);
-
-app.use(cors({
-  origin: allowedOrigins.length
-    ? (origin, callback) => callback(null, !origin || allowedOrigins.includes(origin))
-    : true
-}));
-app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-app.get('/api/health', (req, res) => {
-    res.status(200).json({
-        status: 'ok',
-        mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
-    });
-});
-
-// Multer Setup
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-});
-const upload = multer({ storage });
-
-// Routes
-const newsRoutes = require('./routes/newsRoutes')(upload);
-app.use('/api/news', newsRoutes);
-
-/*const tickerRoutes = require('./routes/ticker');
-app.use('/api/ticker', tickerRoutes);*/
-
-// Start the server
-
-async function startServer() {
-    if (!MONGO_URI) {
-        console.error('FATAL ERROR: MONGO_URI is not configured.');
-        process.exit(1);
-    }
-
-    try {
-        await mongoose.connect(MONGO_URI);
-        console.log('Connected to MongoDB successfully');
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
-    } catch (err) {
-        console.error('MongoDB connection error:', err.message);
-        process.exit(1);
-    }
+// 1. Ensure uploads directory exists on Linux containers (Northflank/Render)
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-startServer();
+// 2. Allow requests from Vercel production, preview deployments, and localhost
+app.use(cors({
+  origin: [
+    'https://an-coffee-main.vercel.app',
+    'https://kilimocoffeeandnews.vercel.app',
+    /\.vercel\.app$/,
+    'http://localhost:4200'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 3. Serve uploaded article images using an absolute path
+app.use('/uploads', express.static(uploadsDir));
+
+// 4. Health check endpoint for Northflank container readiness
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'ok', service: 'Kilimo Coffee & News API' });
+});
+
+// 5. Mount API routes
+app.use('/api/news', newsRoutes);
+app.use('/api/ticker', tickerRoutes);
+
+// 6. Connect to MongoDB Atlas
+const mongoUri = process.env.MONGO_URI;
+if (!mongoUri) {
+  console.error('CRITICAL: MONGO_URI environment variable is missing.');
+} else {
+  mongoose.connect(mongoUri)
+    .then(() => console.log('Connected to MongoDB Atlas'))
+    .catch((err) => console.error('MongoDB connection error:', err));
+}
+
+// 7. Bind immediately to 0.0.0.0 so cloud load balancers can route traffic
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});

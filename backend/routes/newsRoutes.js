@@ -1,106 +1,98 @@
 const express = require('express');
 const router = express.Router();
-const News = require('../models/news');
-const sharp = require('sharp');
-const fs = require('fs');
+const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+const mongoose = require('mongoose');
+const News = require('../models/news');
 
-module.exports = (upload) => {
-    
-    // GET All News
-    router.get('/', async (req, res) => {
-        try {
-            const articles = await News.find().sort({ _id: -1 });
-            
-            const formattedArticles = articles.map(a => ({
-                id: a._id,
-                title: a.title,
-                category: a.category,
-                date: a.date,
-                readTime: a.readTime,
-                snippet: a.content,
-                contentImage: a.contentImage
-            }));
-            
-            res.status(200).json(formattedArticles);
-        } catch (err) {
-            console.error('Error fetching news:', err);
-            res.status(500).json({ message: 'Server error fetching news' });
-        }
+// Ensure uploads folder exists before Multer writes to it
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5 MB max image upload
+});
+
+// GET /api/news - Fetch all articles (newest first)
+router.get('/', async (req, res) => {
+  try {
+    const articles = await News.find().sort({ _id: -1 });
+    res.status(200).json(articles);
+  } catch (err) {
+    console.error('Error fetching news:', err);
+    res.status(500).json({ message: 'Failed to fetch news articles', error: err.message });
+  }
+});
+
+// GET /api/news/:id - Fetch single article safely
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid article ID format' });
+    }
+
+    const article = await News.findById(id);
+    if (!article) {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+
+    res.status(200).json(article);
+  } catch (err) {
+    console.error('Error fetching article:', err);
+    res.status(500).json({ message: 'Failed to fetch article', error: err.message });
+  }
+});
+
+// POST /api/news - Create a new article (with optional contentImage)
+router.post('/', upload.single('contentImage'), async (req, res) => {
+  try {
+    const { title, category, readTime, content, author } = req.body;
+
+    if (!title || !category || !content) {
+      return res.status(400).json({ message: 'Title, category, and content are required.' });
+    }
+
+    // Format date like "November 20, 2026" to match existing database records
+    const formattedDate = new Date().toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
     });
 
-    // GET Single News Article
-    router.get('/:id', async (req, res) => {
-        // Clean the ID of any invisible spaces/newlines
-        const cleanId = req.params.id.trim();
-        console.log('🛎️ Cleaned ID being searched:', cleanId); 
-        
-        try {
-            const article = await News.findById(cleanId);
-            console.log('📦 Database returned:', article ? 'Found it!' : 'NULL - Not found!');
-            
-            if (!article) {
-                return res.status(404).json({ message: 'Article not found' });
-            }
-            
-            const formattedArticle = {
-                id: article._id,
-                title: article.title,
-                category: article.category,
-                date: article.date,
-                readTime: article.readTime,
-                content: article.content, 
-                contentImage: article.contentImage
-            };
-            
-            console.log('✅ Sending article to frontend!');
-            res.status(200).json(formattedArticle);
-        } catch (err) {
-            console.error('🔥 ERROR fetching single news:', err);
-            res.status(500).json({ message: 'Server error fetching news' });
-        }
+    // Store normalized web path (/uploads/filename.jpg) or null if no file was attached
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const newArticle = new News({
+      title: title.trim(),
+      category: category.trim(),
+      date: formattedDate,
+      readTime: readTime || '3 min read',
+      content: content.trim(),
+      contentImage: imagePath,
+      author: author ? author.trim() : 'Henry Kinyua'
     });
 
-    // POST New Article 
-    router.post('/', upload.single('contentImage'), async (req, res) => {
-        try {
-            const { title, category, readTime, content } = req.body;
+    const savedArticle = await newArticle.save();
+    res.status(201).json(savedArticle);
+  } catch (err) {
+    console.error('Error saving news article:', err);
+    res.status(500).json({ message: 'Failed to publish article', error: err.message });
+  }
+});
 
-            if (!title || !content) {
-                return res.status(400).json({ success: false, message: 'Title and content are required.' });
-            }
-
-            let contentImageUrl = null;
-            if (req.file) {
-                const extension = path.extname(req.file.path).toLowerCase();
-                const temporaryPath = `${req.file.path}.optimized`;
-                let image = sharp(req.file.path).rotate();
-                image = extension === '.png'
-                    ? image.png({ compressionLevel: 9, palette: true })
-                    : image.jpeg({ quality: 82, mozjpeg: true });
-
-                await image.toFile(temporaryPath);
-                fs.renameSync(temporaryPath, req.file.path);
-                contentImageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-            }
-
-            const newArticle = new News({
-                title,
-                category: category || 'Market Report',
-                date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-                readTime: readTime || '3 min read',
-                content, // Saving the full article text here
-                contentImage: contentImageUrl
-            });
-
-            await newArticle.save(); 
-            
-            res.status(201).json({ success: true, message: 'Article published successfully!', article: newArticle });
-        } catch (err) {
-            console.error('Error publishing news:', err);
-            res.status(500).json({ success: false, message: 'Failed to publish article.' });
-        }
-    });
-
-    return router;
-};
+module.exports = router;
