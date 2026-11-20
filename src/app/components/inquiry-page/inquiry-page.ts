@@ -51,4 +51,8 @@ services = [
       };
     }, 5000);
   }
+
+  onSubmit() {
+    this.handleSubmit();
+  }
 }

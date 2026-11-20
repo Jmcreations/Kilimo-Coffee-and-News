@@ -11,11 +11,13 @@ import { NewsService } from '../../services/news.service'; // Adjust relative pa
   styleUrl: './news-preview.scss'
 })
 export class NewsPreview implements OnInit {
-  private newsService = inject(NewsService);
+  public newsService = inject(NewsService);
   private cdr = inject(ChangeDetectorRef);
 
+  articles: any[] = [];
   featuredArticles: any[] = [];
   regularArticles: any[] = [];
+  loading = true;
 
   ngOnInit(): void {
     this.fetchNews();
@@ -24,6 +26,8 @@ export class NewsPreview implements OnInit {
   fetchNews(): void {
     this.newsService.getArticles().subscribe({
       next: (data) => {
+        this.articles = data || [];
+        this.loading = false;
         if (data && data.length > 0) {
           // First 2 articles go to the featured section
           this.featuredArticles = data.slice(0, 2);
@@ -39,6 +43,9 @@ export class NewsPreview implements OnInit {
       },
       error: (error) => {
         console.error('❌ Error fetching news:', error);
+        this.articles = [];
+        this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
