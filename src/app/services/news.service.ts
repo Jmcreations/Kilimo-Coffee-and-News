@@ -8,7 +8,8 @@ import { environment } from '../../environments/environment';
 })
 export class NewsService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl.replace(/\/$/, '')}/news`;
+  private baseUrl = environment.apiUrl.replace(/\/+$/, '');
+  private apiUrl = `${this.baseUrl}/news`;
 
   getArticles(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
