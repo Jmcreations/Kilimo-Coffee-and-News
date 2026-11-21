@@ -16,6 +16,8 @@ export interface NewsArticle {
   authorId?: string | null;
 }
 
+export type Article = NewsArticle;
+
 @Injectable({ providedIn: 'root' })
 export class NewsService {
   private http = inject(HttpClient);
@@ -31,8 +33,17 @@ export class NewsService {
     return this.http.get<NewsArticle[]>(this.apiUrl);
   }
 
+  // Alias for existing components (news-preview, all-news)
+  getArticles(): Observable<NewsArticle[]> {
+    return this.getNews();
+  }
+
   getNewsById(id: string): Observable<NewsArticle> {
     return this.http.get<NewsArticle>(`${this.apiUrl}/${id}`);
+  }
+
+  getArticleById(id: string): Observable<NewsArticle> {
+    return this.getNewsById(id);
   }
 
   createNewsWithProgress(formData: FormData): Observable<HttpEvent<NewsArticle>> {
@@ -49,7 +60,7 @@ export class NewsService {
     });
   }
 
-  deleteNews(id: string): Observable<any> {
+  deleteNews(id: string): Observable<unknown> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
@@ -65,11 +76,15 @@ export class NewsService {
     return '/Images/Market-Report.jpg';
   }
 
-  getImageUrl(imagePath?: string | null): string | null {
-    if (!imagePath) return null;
-    if (/^https?:\/\//i.test(imagePath)) return imagePath;
-    const backendOrigin = this.getApiBase().replace(/\/api$/, '');
-    const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-    return `${backendOrigin}${cleanPath}`;
+  getImageUrl(imagePath: string | null | undefined, fallbackCategory: string): string;
+  getImageUrl(imagePath?: string | null): string | null;
+  getImageUrl(imagePath?: string | null, fallbackCategory?: string): string | null {
+    if (imagePath) {
+      if (/^https?:\/\//i.test(imagePath)) return imagePath;
+      const backendOrigin = this.getApiBase().replace(/\/api$/, '');
+      const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+      return `${backendOrigin}${cleanPath}`;
+    }
+    return fallbackCategory ? this.getCategoryCover(fallbackCategory) : null;
   }
 }
