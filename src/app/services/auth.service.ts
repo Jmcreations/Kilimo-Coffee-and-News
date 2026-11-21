@@ -34,7 +34,9 @@ export class AuthService {
 
   getApiBase(): string {
     const raw = environment.apiUrl.trim().replace(/\/+$/, '');
-    return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw) || raw.startsWith('/')) return raw;
+    return `https://${raw}`;
   }
 
   private loadStoredUser(): StaffUser | null {
