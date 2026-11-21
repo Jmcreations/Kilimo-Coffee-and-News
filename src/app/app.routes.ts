@@ -1,35 +1,53 @@
 import { Routes } from '@angular/router';
 import { Home } from './components/home/home';
-import { AllNews } from './components/all-news/all-news';
-import { NewsDetail } from './components/news-detail/news-detail';
-import { PostNews } from './components/post-news/post-news';
-import { Login } from './components/login/login';
-import { DeliveryOrders } from './components/delivery-orders/delivery-orders';
-import { AdminDashboard } from './components/admin-dashboard/admin-dashboard';
-import { PurchaseCoffee } from './components/purchase-coffee/purchase-coffee';
 import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   { path: '', component: Home },
-  { path: 'all-news', component: AllNews },
-  { path: 'news/:id', component: NewsDetail },
-  { path: 'purchase-coffee', component: PurchaseCoffee },
-  { path: 'login', component: Login },
+  {
+    path: 'all-news',
+    loadComponent: () =>
+      import('./components/all-news/all-news').then((m) => m.AllNews)
+  },
+  {
+    path: 'news/:id',
+    loadComponent: () =>
+      import('./components/news-detail/news-detail').then((m) => m.NewsDetail)
+  },
+  {
+    path: 'purchase-coffee',
+    loadComponent: () =>
+      import('./components/purchase-coffee/purchase-coffee').then(
+        (m) => m.PurchaseCoffee
+      )
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./components/login/login').then((m) => m.Login)
+  },
   {
     path: 'post-news',
-    component: PostNews,
+    loadComponent: () =>
+      import('./components/post-news/post-news').then((m) => m.PostNews),
     canActivate: [roleGuard],
     data: { roles: ['journalist', 'admin'] }
   },
   {
     path: 'delivery-orders',
-    component: DeliveryOrders,
+    loadComponent: () =>
+      import('./components/delivery-orders/delivery-orders').then(
+        (m) => m.DeliveryOrders
+      ),
     canActivate: [roleGuard],
     data: { roles: ['delivery', 'admin'] }
   },
   {
     path: 'admin',
-    component: AdminDashboard,
+    loadComponent: () =>
+      import('./components/admin-dashboard/admin-dashboard').then(
+        (m) => m.AdminDashboard
+      ),
     canActivate: [roleGuard],
     data: { roles: ['admin'] }
   },

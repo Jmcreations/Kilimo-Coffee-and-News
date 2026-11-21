@@ -1,49 +1,42 @@
-import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { NewsArticle, NewsService } from '../../services/news.service'; // Adjust relative path if needed
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+import { NewsArticle, NewsService } from '../../services/news.service';
 
 @Component({
   selector: 'app-news-preview',
   standalone: true,
-  imports: [CommonModule, RouterModule], // RouterModule enables routerLink throughout the template
+  imports: [RouterLink],
   templateUrl: './news-preview.html',
   styleUrl: './news-preview.scss'
 })
 export class NewsPreview implements OnInit {
-  public newsService = inject(NewsService);
-  private cdr = inject(ChangeDetectorRef);
+  newsService = inject(NewsService);
 
-  articles: any[] = [];
-  featuredArticles: any[] = [];
-  regularArticles: any[] = [];
-  loading = true;
+  articles = signal<NewsArticle[]>([]);
+  loading = signal<boolean>(true);
+  errorMessage = signal<string>('');
 
   ngOnInit(): void {
-    this.fetchNews();
+    this.loadArticles();
   }
 
-  fetchNews(): void {
-    this.newsService.getArticles().subscribe({
-      next: (data: NewsArticle[]) => {
-        this.articles = data.slice(0, 3);
-        this.loading = false;
-      },
-      error: (error: unknown) => {
-        console.error('Error fetching news:', error);
-        this.loading = false;
-      }
-    });
-  }
+  loadArticles(): void {
+    this.loading.set(true);
+    this.errorMessage.set('');
 
-  getCategoryCover(category: string): string {
-    const coverMap: Record<string, string> = {
-      'Market Report': '/Images/Market-Report.jpg',
-      'Trade Policies': '/Images/Trade-Policies.jpg',
-      'Farming Innovation': '/Images/Farming-Innovation.jpg',
-      'Cooperative News': '/Images/Cooperative-news.jpg'
-    };
-
-    return coverMap[category] || '/Images/default.jpg';
+    this.newsService
+      .getArticles()
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (data: NewsArticle[]) => {
+          const list = Array.isArray(data) ? data : [];
+          this.articles.set(list.slice(0, 3));
+        },
+        error: (err: unknown) => {
+          console.error('Error fetching news:', err);
+          this.errorMessage.set('Unable to load latest news right now.');
+        }
+      });
   }
 }
