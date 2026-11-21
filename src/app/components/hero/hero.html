@@ -26,17 +26,33 @@
       </a>
 
       <a
-        href="#data-teaser"
+        href="#marketplace"
         class="btn-feedback inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white font-medium text-sm sm:text-base">
         Market Intelligence
       </a>
 
-      <a
-        href="#purchase-coffee"
-        routerLink="/purchase-coffee"
-        class="btn-feedback inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-[#4B3621] hover:bg-[#3A2919] text-white font-medium text-sm sm:text-base">
-        Purchase Coffee
-      </a>
+      <details class="btn-feedback relative rounded-lg bg-[#4B3621] text-white font-medium text-sm sm:text-base">
+        <summary class="inline-flex w-full items-center justify-center gap-2 px-6 py-3.5 cursor-pointer list-none select-none">
+          <span>Purchase Coffee</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </summary>
+        <div class="absolute left-0 right-0 sm:left-1/2 sm:right-auto sm:w-56 sm:-translate-x-1/2 top-full mt-2 z-30 overflow-hidden rounded-lg border border-[#4B3621]/15 bg-white py-1 text-left text-[#333333] shadow-xl">
+          <a
+            routerLink="/purchase-coffee"
+            class="block px-4 py-3 hover:bg-[#FDFCF5] hover:text-[#2E7D32] transition-colors"
+          >
+            Local export
+          </a>
+          <a
+            href="/#contact"
+            class="block px-4 py-3 hover:bg-[#FDFCF5] hover:text-[#2E7D32] transition-colors"
+          >
+            International export
+          </a>
+        </div>
+      </details>
     </div>
   </div>
 </section>
