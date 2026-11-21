@@ -1,22 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterLink], // Removed FormsModule since there are no longer inputs
-  templateUrl: './login.html',
   standalone: true,
-  styleUrl: './login.scss',
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './login.html',
+  styleUrl: './login.scss'
 })
-export class Login {
+export class Login implements OnInit {
+  private authService = inject(AuthService);
 
-  handleGoogleLogin() {
-    console.log('Attempting Google OAuth login...');
-    // Future Google SSO logic goes here
+  email = '';
+  password = '';
+  loading = false;
+  errorMessage = '';
+
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.authService.redirectByRole();
+    }
   }
 
-  handleMicrosoftLogin() {
-    console.log('Attempting Microsoft OAuth login...');
-    // Future Microsoft SSO logic goes here
+  onSubmit(): void {
+    if (!this.email.trim() || !this.password) {
+      this.errorMessage = 'Please enter your email and password.';
+      return;
+    }
+
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.authService.login(this.email.trim(), this.password).subscribe({
+      next: (res) => {
+        this.loading = false;
+        this.authService.redirectByRole(res.user.role);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.message || 'Invalid credentials. Please try again.';
+      }
+    });
   }
 }
