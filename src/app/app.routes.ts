@@ -30,5 +30,7 @@ export const routes: Routes = [
     component: AdminDashboard,
     canActivate: [roleGuard],
     data: { roles: ['admin'] }
-  }
+  },
+  // Fallback: redirect any unknown URL back to the home page
+  { path: '**', redirectTo: '' }
 ];
