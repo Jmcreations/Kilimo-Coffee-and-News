@@ -22,8 +22,21 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }
+  limits: { fileSize: 8 * 1024 * 1024 } // 8 MB max image upload
 });
+
+function canManageArticle(user, article) {
+  if (user.role === 'admin') return true;
+  if (article.authorId && article.authorId.toString() === user.id) return true;
+  if (
+    article.author &&
+    user.name &&
+    article.author.trim().toLowerCase() === user.name.trim().toLowerCase()
+  ) {
+    return true;
+  }
+  return false;
+}
 
 // GET /api/news - Public list of all articles
 router.get('/', async (_req, res) => {
@@ -73,14 +86,21 @@ router.post(
         year: 'numeric'
       });
 
+      // Journalists are always acknowledged under their logged-in account name
+      const creditedAuthor =
+        req.user.role === 'journalist'
+          ? req.user.name
+          : author?.trim() || req.user.name || 'Kilimo News Desk';
+
       const newArticle = new News({
         title: title.trim(),
         category: category.trim(),
         date: formattedDate,
-        readTime: readTime || '3 min read',
+        readTime: readTime?.trim() || '3 min read',
         content: content.trim(),
         contentImage: req.file ? `/uploads/${req.file.filename}` : null,
-        author: author?.trim() || req.user.name || 'Kilimo News Desk'
+        author: creditedAuthor,
+        authorId: req.user.id
       });
 
       const savedArticle = await newArticle.save();
@@ -91,11 +111,11 @@ router.post(
   }
 );
 
-// PUT /api/news/:id - Edit any article (Admin only)
+// PUT /api/news/:id - Edit own article (Journalist) or any article (Admin)
 router.put(
   '/:id',
   verifyToken,
-  authorizeRoles('admin'),
+  authorizeRoles('journalist', 'admin'),
   upload.single('contentImage'),
   async (req, res) => {
     try {
@@ -109,12 +129,23 @@ router.put(
         return res.status(404).json({ message: 'Article not found' });
       }
 
+      if (!canManageArticle(req.user, article)) {
+        return res.status(403).json({ message: 'You can only edit articles that you authored.' });
+      }
+
       const { title, category, readTime, content, author } = req.body;
       if (title) article.title = title.trim();
       if (category) article.category = category.trim();
       if (readTime) article.readTime = readTime.trim();
       if (content) article.content = content.trim();
-      if (author) article.author = author.trim();
+
+      if (req.user.role === 'journalist') {
+        article.author = req.user.name;
+        article.authorId = req.user.id;
+      } else if (author) {
+        article.author = author.trim();
+      }
+
       if (req.file) {
         article.contentImage = `/uploads/${req.file.filename}`;
       }
@@ -127,23 +158,33 @@ router.put(
   }
 );
 
-// DELETE /api/news/:id - Delete any article (Admin only)
-router.delete('/:id', verifyToken, authorizeRoles('admin'), async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid article ID format' });
-    }
+// DELETE /api/news/:id - Delete own article (Journalist) or any article (Admin)
+router.delete(
+  '/:id',
+  verifyToken,
+  authorizeRoles('journalist', 'admin'),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: 'Invalid article ID format' });
+      }
 
-    const deleted = await News.findByIdAndDelete(id);
-    if (!deleted) {
-      return res.status(404).json({ message: 'Article not found' });
-    }
+      const article = await News.findById(id);
+      if (!article) {
+        return res.status(404).json({ message: 'Article not found' });
+      }
 
-    res.status(200).json({ message: 'Article deleted successfully.' });
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to delete article', error: err.message });
+      if (!canManageArticle(req.user, article)) {
+        return res.status(403).json({ message: 'You can only delete articles that you authored.' });
+      }
+
+      await News.findByIdAndDelete(id);
+      res.status(200).json({ message: 'Article deleted successfully.' });
+    } catch (err) {
+      res.status(500).json({ message: 'Failed to delete article', error: err.message });
+    }
   }
-});
+);
 
 module.exports = router;

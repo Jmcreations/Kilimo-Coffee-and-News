@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from './components/header/header';
 import { NceTicker } from './components/nce-ticker/nce-ticker';
+import { NavigationHistoryService } from './services/navigation-history';
 
 @Component({
   selector: 'app-root',
@@ -12,4 +13,5 @@ import { NceTicker } from './components/nce-ticker/nce-ticker';
 })
 export class AppComponent {
   title = 'Kilimo Coffee and News';
+  private navHistory = inject(NavigationHistoryService);
 }

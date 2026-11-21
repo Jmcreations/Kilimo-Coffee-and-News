@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef, inject, } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { NewsService } from '../../services/news.service';
+import { NewsArticle, NewsService } from '../../services/news.service';
 
 @Component({
   selector: 'app-news-detail',
@@ -12,53 +12,34 @@ import { NewsService } from '../../services/news.service';
 })
 export class NewsDetail implements OnInit {
   private route = inject(ActivatedRoute);
-  private location = inject(Location);
-  public newsService = inject(NewsService); // Made public so HTML can access newsService.getImageUrl
-  private cdr = inject(ChangeDetectorRef);
+  newsService = inject(NewsService);
 
-  article: any = null;
-  loading: boolean = true;
-  errorMessage: string = '';
-  cameFromAllNews: boolean = false;
+  article = signal<NewsArticle | null>(null);
+  loading = signal<boolean>(true);
+  error = signal<boolean>(false);
 
   ngOnInit(): void {
-    // Listen for query params ('?from=all')
-    this.route.queryParamMap.subscribe(params => {
-      this.cameFromAllNews = (params.get('from') === 'all');
-      this.cdr.detectChanges();
-    });
-
-    // Subscribe to route params so changes re-trigger article loading
-    this.route.paramMap.subscribe(params => {
-      const articleId = params.get('id');
-      if (articleId) {
-        this.fetchArticle(articleId);
-      } else {
-        this.errorMessage = 'Article not found.';
-        this.loading = false;
-        this.cdr.detectChanges();
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      if (!id || id === 'undefined') {
+        this.error.set(true);
+        this.loading.set(false);
+        return;
       }
-    });
-  }
 
-  fetchArticle(id: string): void {
-    this.loading = true;
-    this.newsService.getArticleById(id).subscribe({
-      next: (data) => {
-        this.article = data;
-        this.loading = false;
-        this.cdr.detectChanges(); 
-      },
-      error: (err) => {
-        console.error('Failed to load article:', err);
-        this.errorMessage = 'Could not load article. Please try again.';
-        this.loading = false;
-        this.cdr.detectChanges(); 
-      }
-    });
-  }
+      this.loading.set(true);
+      this.error.set(false);
 
-  goBack(): void {
-    this.location.back();
+      this.newsService.getNewsById(id).subscribe({
+        next: (data) => {
+          this.article.set(data);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set(true);
+          this.loading.set(false);
+        }
+      });
+    });
   }
 }

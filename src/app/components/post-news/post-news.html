@@ -1,109 +1,239 @@
-<div class="min-h-screen bg-[#FDFCF5] pt-[115px] pb-16 px-6">
-  <div class="max-w-3xl mx-auto">
-    
-    <!-- Top Navigation Bar -->
-    <div class="flex items-center justify-between mb-8 pb-4 border-b border-[#4B3621]/10">
-      <div class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#4B3621]"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg>
-        <h1 class="font-serif text-2xl text-[#4B3621]">Publish News Update</h1>
-      </div>
-      <a routerLink="/" class="text-sm text-[#2E7D32] hover:underline font-medium">&larr; Back to Portal</a>
+<app-staff-nav></app-staff-nav>
+
+<section class="min-h-screen bg-[#FDFCF5] py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto space-y-10">
+
+    <!-- Top Context-Aware Back Button & Author Attribution -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <button
+        type="button"
+        (click)="navHistory.goBack()"
+        class="inline-flex items-center gap-2 text-sm font-medium text-[#4B3621] hover:text-[#2E7D32] transition-colors cursor-pointer self-start">
+        <span>&larr;</span>
+        <span>{{ navHistory.backLabel() }}</span>
+      </button>
+
+      @if (auth.currentUser(); as user) {
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#4B3621]/15 text-xs text-[#4B3621] self-start sm:self-auto">
+          <span class="w-2 h-2 rounded-full bg-[#2E7D32]"></span>
+          <span>Author Credit: <strong>{{ user.name }}</strong></span>
+        </div>
+      }
     </div>
 
-    <!-- Form Container -->
-    <div class="bg-white p-8 rounded-lg shadow-md border border-[#4B3621]/10">
-      <form (ngSubmit)="publishArticle()" #newsForm="ngForm" class="space-y-6">
-        
-        <!-- Article Title -->
+    <!-- Publish / Edit News Card -->
+    <div class="bg-white rounded-2xl border border-[#4B3621]/15 shadow-xs p-6 sm:p-8">
+      <div class="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-[#4B3621]/10">
         <div>
-          <label for="title" class="block text-sm font-medium text-[#333333] mb-2">Article Title *</label>
-          <input 
-            type="text" 
-            id="title" 
-            name="title" 
-            [(ngModel)]="articleData.title" 
+          <h1 class="font-serif text-2xl sm:text-3xl text-[#4B3621]">
+            {{ editingArticleId() ? 'Edit Published Article' : 'Publish Coffee Industry News' }}
+          </h1>
+          <p class="text-xs sm:text-sm text-[#333333]/75 mt-1">
+            Articles are published immediately under your name and displayed on the Kilimo news feed.
+          </p>
+        </div>
+
+        @if (editingArticleId()) {
+          <button
+            type="button"
+            (click)="cancelEdit()"
+            class="px-3.5 py-2 rounded-lg border border-[#4B3621]/20 text-xs font-medium text-[#4B3621] hover:bg-[#FDFCF5] cursor-pointer">
+            Cancel Edit
+          </button>
+        }
+      </div>
+
+      @if (successMessage()) {
+        <div class="mb-5 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm">
+          {{ successMessage() }}
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <div class="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <form (ngSubmit)="onSubmit()" class="space-y-5">
+        <div>
+          <label class="block text-xs font-semibold text-[#4B3621] mb-1.5">Article Title *</label>
+          <input
+            type="text"
+            name="title"
+            [(ngModel)]="title"
             required
-            placeholder="e.g. Nyeri Farmers Cooperatives Announce Record Premium Payouts"
-            class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white"
+            placeholder="e.g. Sale 8 at Nairobi Coffee Exchange Sees Strong AA Demand"
+            class="w-full px-4 py-2.5 rounded-lg border border-[#4B3621]/20 focus:outline-none focus:border-[#2E7D32] text-sm"
           />
         </div>
 
-        <!-- Category & Read Time -->
-        <div class="grid sm:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label for="category" class="block text-sm font-medium text-[#333333] mb-2">Category *</label>
-            <select 
-              id="category" 
-              name="category" 
-              [(ngModel)]="articleData.category" 
-              required
-              class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white"
-            >
+            <label class="block text-xs font-semibold text-[#4B3621] mb-1.5">Category *</label>
+            <select
+              name="category"
+              [(ngModel)]="category"
+              class="w-full px-4 py-2.5 rounded-lg border border-[#4B3621]/20 focus:outline-none focus:border-[#2E7D32] text-sm bg-white">
               <option value="Market Report">Market Report</option>
-              <option value="Trade Policies">Trade Policies</option>
-              <option value="Farming Innovation">Farming Innovation</option>
               <option value="Cooperative News">Cooperative News</option>
+              <option value="Farming Innovation">Farming Innovation</option>
+              <option value="Trade Policies">Trade Policies</option>
             </select>
           </div>
 
           <div>
-            <label for="readTime" class="block text-sm font-medium text-[#333333] mb-2">Estimated Read Time</label>
-            <input 
-              type="text" 
-              id="readTime" 
-              name="readTime" 
-              [(ngModel)]="articleData.readTime" 
-              placeholder="e.g. 3 min read"
-              class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white"
+            <label class="block text-xs font-semibold text-[#4B3621] mb-1.5">Estimated Read Time</label>
+            <input
+              type="text"
+              name="readTime"
+              [(ngModel)]="readTime"
+              placeholder="3 min read"
+              class="w-full px-4 py-2.5 rounded-lg border border-[#4B3621]/20 focus:outline-none focus:border-[#2E7D32] text-sm"
             />
           </div>
         </div>
 
-        <!--Image Upload -->
+        <!-- Optional Article Photo Upload -->
         <div>
-          <label for="imageFile" class="block text-sm font-medium text-[#333333] mb-2">Upload Image for Article (Optional)</label>
-          <input 
-            type="file" 
-            id="imageFile" 
-            (change)="onFileSelected($event)"
-            accept="image/*"
-            class="w-full px-4 py-2 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-[#2E7D32]/10 file:text-[#2E7D32] hover:file:bg-[#2E7D32]/20"
-          />
+          <label class="block text-xs font-semibold text-[#4B3621] mb-1.5">
+            Upload Article Photo (Optional — displayed below the article body)
+          </label>
+          <div class="flex flex-wrap items-center gap-3">
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              class="text-xs sm:text-sm text-[#333333] file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#2E7D32]/10 file:text-[#2E7D32] hover:file:bg-[#2E7D32]/20 cursor-pointer"
+            />
+            @if (selectedFile) {
+              <button
+                type="button"
+                (click)="clearSelectedFile()"
+                class="text-xs text-red-600 hover:underline cursor-pointer">
+                Remove photo
+              </button>
+            }
+          </div>
+
+          @if (previewImageUrl()) {
+            <div class="mt-3 relative inline-block">
+              <img
+                [src]="previewImageUrl()"
+                alt="Selected article photo preview"
+                class="h-36 w-auto rounded-xl border border-[#4B3621]/15 object-cover"
+              />
+            </div>
+          }
         </div>
 
-        <!-- Article Snippet / Body -->
         <div>
-          <label for="snippet" class="block text-sm font-medium text-[#333333] mb-2">Summary / Content *</label>
-          <textarea 
-            id="snippet" 
-            name="snippet" 
-            [(ngModel)]="articleData.content" 
-            required 
-            rows="5"
-            placeholder="Write the full announcement or brief news summary here..."
-            class="w-full px-4 py-3 border border-[#4B3621]/20 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E7D32] bg-white resize-none"
-          ></textarea>
+          <label class="block text-xs font-semibold text-[#4B3621] mb-1.5">Summary / Content *</label>
+          <textarea
+            rows="8"
+            name="content"
+            [(ngModel)]="content"
+            required
+            placeholder="Write the full coffee market report or news story..."
+            class="w-full px-4 py-3 rounded-lg border border-[#4B3621]/20 focus:outline-none focus:border-[#2E7D32] text-sm leading-relaxed"></textarea>
         </div>
 
-        <!-- Submit Button -->
-        <button 
-          type="submit" 
-          [disabled]="!newsForm.form.valid || submitting"
-          class="w-full bg-[#2E7D32] text-white px-8 py-3.5 rounded-md hover:bg-[#2E7D32]/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {{ submitting ? 'Publishing Post...' : 'Publish News Post' }}
-        </button>
-
-        <!-- Success Toast -->
-        @if (successMessage) {
-          <div class="p-4 bg-[#2E7D32]/10 border border-[#2E7D32]/30 rounded-md flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#2E7D32]"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span class="text-[#2E7D32] text-sm font-medium">Article published! Redirecting to home feed...</span>
+        <!-- REAL-TIME PERCENTAGE PROGRESS BAR -->
+        @if (submitting()) {
+          <div class="p-4 rounded-xl bg-[#FDFCF5] border border-[#2E7D32]/30 space-y-2">
+            <div class="flex items-center justify-between text-xs font-semibold text-[#4B3621]">
+              <span>{{ uploadStatusText() }}</span>
+              <span class="text-[#2E7D32]">{{ uploadProgress() }}%</span>
+            </div>
+            <div class="w-full h-3 bg-[#4B3621]/10 rounded-full overflow-hidden">
+              <div
+                class="h-full bg-[#2E7D32] transition-all duration-200 ease-out rounded-full"
+                [style.width.%]="uploadProgress()">
+              </div>
+            </div>
           </div>
         }
 
+        <button
+          type="submit"
+          [disabled]="submitting()"
+          class="btn-feedback w-full py-3.5 rounded-xl bg-[#2E7D32] hover:bg-[#256628] disabled:opacity-60 text-white font-semibold text-sm sm:text-base">
+          {{
+            submitting()
+              ? 'Uploading (' + uploadProgress() + '%)...'
+              : editingArticleId()
+                ? 'Save Article Changes'
+                : 'Publish News Post'
+          }}
+        </button>
       </form>
     </div>
 
+    <!-- JOURNALIST'S PREVIOUSLY POSTED ARTICLES (EDIT & DELETE) -->
+    <div class="bg-white rounded-2xl border border-[#4B3621]/15 shadow-xs p-6 sm:p-8">
+      <div class="flex items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 class="font-serif text-xl sm:text-2xl text-[#4B3621]">
+            {{ auth.hasRole('admin') ? 'All Published Articles' : 'Your Previously Posted Articles' }}
+          </h2>
+          <p class="text-xs sm:text-sm text-[#333333]/70 mt-0.5">
+            Review, edit, or delete articles published under your account
+          </p>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-[#FDFCF5] border border-[#4B3621]/15 text-xs font-semibold text-[#4B3621]">
+          {{ myArticles().length }} {{ myArticles().length === 1 ? 'Post' : 'Posts' }}
+        </span>
+      </div>
+
+      @if (loadingArticles()) {
+        <div class="space-y-3 animate-pulse">
+          <div class="h-16 bg-[#4B3621]/10 rounded-xl"></div>
+          <div class="h-16 bg-[#4B3621]/10 rounded-xl"></div>
+        </div>
+      } @else if (myArticles().length === 0) {
+        <div class="p-8 rounded-xl bg-[#FDFCF5] border border-[#4B3621]/10 text-center text-sm text-[#333333]/70">
+          You have not published any articles yet. Your posts will appear here once published above.
+        </div>
+      } @else {
+        <div class="divide-y divide-[#4B3621]/10">
+          @for (article of myArticles(); track article._id || article.id) {
+            <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-2 text-xs">
+                  <span class="px-2.5 py-0.5 rounded-full bg-[#2E7D32]/10 text-[#2E7D32] font-semibold">
+                    {{ article.category }}
+                  </span>
+                  <span class="text-[#333333]/65">{{ article.date }} &bull; By {{ article.author }}</span>
+                </div>
+                <h3 class="font-serif text-base sm:text-lg font-semibold text-[#4B3621]">
+                  {{ article.title }}
+                </h3>
+              </div>
+
+              <div class="flex items-center gap-2.5 shrink-0">
+                <a
+                  [routerLink]="['/news', article._id || article.id]"
+                  class="px-3 py-1.5 rounded-lg border border-[#4B3621]/20 text-xs font-medium text-[#4B3621] hover:bg-[#FDFCF5]">
+                  View
+                </a>
+                <button
+                  type="button"
+                  (click)="startEdit(article)"
+                  class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-semibold cursor-pointer">
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  (click)="deleteOwnArticle(article)"
+                  class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 text-xs font-semibold cursor-pointer">
+                  Delete
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
   </div>
-</div>
+</section>
