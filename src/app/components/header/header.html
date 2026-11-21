@@ -13,20 +13,64 @@
       </span>
     </a>
 
-    <!-- Desktop Links (Contact replaced with Purchase Coffee) -->
+    <!-- Desktop Links -->
     <div class="hidden lg:flex items-center gap-7 text-sm font-medium text-[#333333]">
-      <a routerLink="/all-news" class="hover:text-[#2E7D32] transition-colors">News</a>
-      <a href="/#about" class="hover:text-[#2E7D32] transition-colors">About Us</a>
-      <a href="/#grades" class="hover:text-[#2E7D32] transition-colors">Coffee Grades</a>
-      <a href="/#marketplace" class="hover:text-[#2E7D32] transition-colors">Market Data</a>
-      <a routerLink="/purchase-coffee" class="text-[#2E7D32] font-semibold hover:text-[#256628] transition-colors inline-flex items-center gap-1.5">
-        <span>Purchase Coffee</span>
-        @if (cart.totalItems() > 0) {
-          <span class="px-2 py-0.5 rounded-full bg-[#2E7D32] text-white text-[11px] font-bold">
-            {{ cart.totalItems() }}
-          </span>
+      <a routerLink="/all-news" (click)="closeMenu()" class="hover:text-[#2E7D32] transition-colors">News</a>
+      <a href="/#about" (click)="closeMenu()" class="hover:text-[#2E7D32] transition-colors">About Us</a>
+      <a href="/#grades" (click)="closeMenu()" class="hover:text-[#2E7D32] transition-colors">Coffee Grades</a>
+      <a href="/#market" (click)="closeMenu()" class="hover:text-[#2E7D32] transition-colors">Market Data</a>
+
+      <!-- Purchase Coffee Dropdown (Desktop) -->
+      <div class="relative">
+        <button
+          type="button"
+          (click)="togglePurchaseDropdown($event)"
+          class="text-[#2E7D32] font-semibold hover:text-[#256628] transition-colors inline-flex items-center gap-1.5 cursor-pointer">
+          <span>Purchase Coffee</span>
+          @if (cart.totalItems() > 0) {
+            <span class="px-2 py-0.5 rounded-full bg-[#2E7D32] text-white text-[11px] font-bold">
+              {{ cart.totalItems() }}
+            </span>
+          }
+          <svg
+            class="w-4 h-4 transition-transform duration-200"
+            [class.rotate-180]="purchaseDropdownOpen"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        @if (purchaseDropdownOpen) {
+          <div class="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-xl border border-[#4B3621]/15 overflow-hidden z-50">
+            <a
+              routerLink="/purchase-coffee"
+              (click)="closeMenu()"
+              class="block px-4 py-3 hover:bg-[#FDFCF5] border-b border-[#4B3621]/10 transition-colors">
+              <div class="font-semibold text-sm text-[#4B3621] flex items-center justify-between">
+                <span>Local Export</span>
+                @if (cart.totalItems() > 0) {
+                  <span class="text-[11px] font-bold text-[#2E7D32]">{{ cart.totalItems() }} in cart</span>
+                }
+              </div>
+              <div class="text-xs text-[#333333]/70 mt-0.5">
+                Roasted beans &amp; ground coffee delivered locally
+              </div>
+            </a>
+
+            <a
+              href="/#contact"
+              (click)="closeMenu()"
+              class="block px-4 py-3 hover:bg-[#FDFCF5] transition-colors">
+              <div class="font-semibold text-sm text-[#4B3621]">International Export</div>
+              <div class="text-xs text-[#333333]/70 mt-0.5">
+                Bulk green coffee lots &amp; export inquiries
+              </div>
+            </a>
+          </div>
         }
-      </a>
+      </div>
     </div>
 
     <!-- Desktop CTA Button -->
@@ -74,15 +118,51 @@
       <a href="/#grades" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
         Coffee Grades
       </a>
-      <a href="/#marketplace" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
+      <a href="/#market" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
         Market Data
       </a>
-      <a routerLink="/purchase-coffee" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#2E7D32] hover:bg-[#FDFCF5] font-semibold transition-colors flex items-center justify-between">
-        <span>Purchase Coffee</span>
-        @if (cart.totalItems() > 0) {
-          <span class="px-2 py-0.5 rounded-full bg-[#2E7D32] text-white text-xs">{{ cart.totalItems() }}</span>
+
+      <!-- Purchase Coffee Expandable Dropdown (Mobile) -->
+      <div class="rounded-lg bg-[#FDFCF5]/70 border border-[#4B3621]/10 overflow-hidden">
+        <button
+          type="button"
+          (click)="togglePurchaseDropdown($event)"
+          class="w-full px-3 py-2.5 text-[#2E7D32] font-semibold flex items-center justify-between cursor-pointer">
+          <span class="inline-flex items-center gap-2">
+            <span>Purchase Coffee</span>
+            @if (cart.totalItems() > 0) {
+              <span class="px-2 py-0.5 rounded-full bg-[#2E7D32] text-white text-xs">{{ cart.totalItems() }}</span>
+            }
+          </span>
+          <svg
+            class="w-4 h-4 transition-transform duration-200"
+            [class.rotate-180]="purchaseDropdownOpen"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        @if (purchaseDropdownOpen) {
+          <div class="border-t border-[#4B3621]/10 bg-white divide-y divide-[#4B3621]/10">
+            <a
+              routerLink="/purchase-coffee"
+              (click)="closeMenu()"
+              class="block px-4 py-2.5 hover:bg-[#FDFCF5]">
+              <div class="text-sm font-semibold text-[#4B3621]">Local Export</div>
+              <div class="text-xs text-[#333333]/70">Roasted beans &amp; ground coffee</div>
+            </a>
+            <a
+              href="/#contact"
+              (click)="closeMenu()"
+              class="block px-4 py-2.5 hover:bg-[#FDFCF5]">
+              <div class="text-sm font-semibold text-[#4B3621]">International Export</div>
+              <div class="text-xs text-[#333333]/70">Bulk green coffee &amp; export inquiry</div>
+            </a>
+          </div>
         }
-      </a>
+      </div>
 
       @if (auth.isLoggedIn()) {
         <a

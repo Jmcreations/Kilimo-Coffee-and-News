@@ -1,16 +1,18 @@
-<section class="relative min-h-[78vh] flex items-center justify-center bg-[#2C1E12] text-white overflow-hidden">
-  <!-- Background Image + Dark Readability Overlay -->
-  <img
-    src="/Images/Farming-Innovation.jpg"
-    alt="Kenyan coffee highlands"
-    class="absolute inset-0 w-full h-full object-cover object-center opacity-55"
-  />
-  <div class="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/70"></div>
+<section class="relative z-20 min-h-[78vh] flex items-center justify-center bg-[#2C1E12] text-white">
+  <!-- Background Image Wrapper (overflow-hidden stays ONLY here) -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <img
+      src="/Images/Farming-Innovation.jpg"
+      alt="Kenyan coffee highlands"
+      class="w-full h-full object-cover object-center opacity-55"
+    />
+    <div class="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/70"></div>
+  </div>
 
   <!-- Responsive Content Container -->
   <div class="relative z-10 max-w-5xl mx-auto py-16 sm:py-24 px-4 sm:px-6 text-center">
     <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight mb-6">
-      One stop shop for coffee information and purchase from all regions in Kenya.
+      One-stop access to coffee information and buying opportunities across every region in Kenya.
     </h1>
 
     <p class="max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-white/90 leading-relaxed mb-10">
@@ -26,33 +28,52 @@
       </a>
 
       <a
-        href="#marketplace"
+        href="#market"
         class="btn-feedback inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white font-medium text-sm sm:text-base">
         Market Intelligence
       </a>
 
-      <details class="btn-feedback relative rounded-lg bg-[#4B3621] text-white font-medium text-sm sm:text-base">
-        <summary class="inline-flex w-full items-center justify-center gap-2 px-6 py-3.5 cursor-pointer list-none select-none">
+      <!-- Purchase Coffee Dropdown Wrapper -->
+      <div class="relative">
+        <button
+          type="button"
+          (click)="togglePurchaseDropdown($event)"
+          class="btn-feedback w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-[#4B3621] hover:bg-[#3A2919] text-white font-medium text-sm sm:text-base">
           <span>Purchase Coffee</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg
+            class="w-4 h-4 transition-transform duration-200"
+            [class.rotate-180]="purchaseDropdownOpen"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
-        </summary>
-        <div class="absolute left-0 right-0 sm:left-1/2 sm:right-auto sm:w-56 sm:-translate-x-1/2 top-full mt-2 z-30 overflow-hidden rounded-lg border border-[#4B3621]/15 bg-white py-1 text-left text-[#333333] shadow-xl">
-          <a
-            routerLink="/purchase-coffee"
-            class="block px-4 py-3 hover:bg-[#FDFCF5] hover:text-[#2E7D32] transition-colors"
-          >
-            Local export
-          </a>
-          <a
-            href="/#contact"
-            class="block px-4 py-3 hover:bg-[#FDFCF5] hover:text-[#2E7D32] transition-colors"
-          >
-            International export
-          </a>
-        </div>
-      </details>
+        </button>
+
+        @if (purchaseDropdownOpen) {
+          <div class="relative sm:absolute sm:right-0 sm:w-72 mt-2 bg-white text-[#333333] rounded-xl shadow-2xl border border-[#4B3621]/15 overflow-hidden text-left z-30">
+            <a
+              routerLink="/purchase-coffee"
+              (click)="closePurchaseDropdown()"
+              class="block px-4 py-3.5 hover:bg-[#FDFCF5] border-b border-[#4B3621]/10 transition-colors">
+              <div class="font-semibold text-sm text-[#4B3621]">Local Export</div>
+              <div class="text-xs text-[#333333]/70 mt-0.5">
+                Roasted beans &amp; ground coffee delivered across Kenya
+              </div>
+            </a>
+
+            <a
+              href="#contact"
+              (click)="closePurchaseDropdown()"
+              class="block px-4 py-3.5 hover:bg-[#FDFCF5] transition-colors">
+              <div class="font-semibold text-sm text-[#4B3621]">International Export</div>
+              <div class="text-xs text-[#333333]/70 mt-0.5">
+                Bulk green lots (AA, AB, PB) &amp; global trade inquiries
+              </div>
+            </a>
+          </div>
+        }
+      </div>
     </div>
   </div>
 </section>
