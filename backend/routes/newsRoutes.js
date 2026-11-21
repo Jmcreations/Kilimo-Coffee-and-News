@@ -88,9 +88,9 @@ router.post(
 
       // Journalists are always acknowledged under their logged-in account name
       const creditedAuthor =
-        req.user.role === 'journalist'
-          ? req.user.name
-          : author?.trim() || req.user.name || 'Kilimo News Desk';
+      req.user.role === 'admin'
+        ? 'Henry Kinyua'
+        : req.user.name || 'Kilimo News Desk';
 
       const newArticle = new News({
         title: title.trim(),
@@ -139,11 +139,12 @@ router.put(
       if (readTime) article.readTime = readTime.trim();
       if (content) article.content = content.trim();
 
-      if (req.user.role === 'journalist') {
+      if (req.user.role === 'admin') {
+        article.author = 'Henry Kinyua';
+      }
+      else {
         article.author = req.user.name;
         article.authorId = req.user.id;
-      } else if (author) {
-        article.author = author.trim();
       }
 
       if (req.file) {

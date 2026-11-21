@@ -19,7 +19,7 @@ async function seedAdmin() {
     }
 
     await User.create({
-      name: 'Kilimo Super Admin',
+      name: 'Henry Kinyua',
       email,
       password,
       role: 'admin',
