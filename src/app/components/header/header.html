@@ -13,22 +13,37 @@
       </span>
     </a>
 
-    <!-- Desktop Links -->
+    <!-- Desktop Links (Contact replaced with Purchase Coffee) -->
     <div class="hidden lg:flex items-center gap-7 text-sm font-medium text-[#333333]">
       <a routerLink="/all-news" class="hover:text-[#2E7D32] transition-colors">News</a>
-      <a href="#about" class="hover:text-[#2E7D32] transition-colors">About Us</a>
-      <a href="#grades" class="hover:text-[#2E7D32] transition-colors">Coffee Grades</a>
-      <a href="#data-teaser" class="hover:text-[#2E7D32] transition-colors">Market Data</a>
-      <a href="#contact" class="hover:text-[#2E7D32] transition-colors">Contact</a>
+      <a href="/#about" class="hover:text-[#2E7D32] transition-colors">About Us</a>
+      <a href="/#grades" class="hover:text-[#2E7D32] transition-colors">Coffee Grades</a>
+      <a href="/#market" class="hover:text-[#2E7D32] transition-colors">Market Data</a>
+      <a routerLink="/purchase-coffee" class="text-[#2E7D32] font-semibold hover:text-[#256628] transition-colors inline-flex items-center gap-1.5">
+        <span>Purchase Coffee</span>
+        @if (cart.totalItems() > 0) {
+          <span class="px-2 py-0.5 rounded-full bg-[#2E7D32] text-white text-[11px] font-bold">
+            {{ cart.totalItems() }}
+          </span>
+        }
+      </a>
     </div>
 
     <!-- Desktop CTA Button -->
     <div class="hidden lg:block shrink-0">
-      <a
-        routerLink="/login"
-        class="inline-flex items-center justify-center bg-[#2E7D32] hover:bg-[#256628] text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap">
-        Premium Login / Register
-      </a>
+      @if (auth.isLoggedIn()) {
+        <a
+          [routerLink]="getStaffHomeRoute()"
+          class="inline-flex items-center justify-center bg-[#4B3621] hover:bg-[#3A2919] text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-xs hover:shadow-md transition-all duration-200 whitespace-nowrap">
+          Staff Workspace ({{ auth.currentUser()?.role }})
+        </a>
+      } @else {
+        <a
+          routerLink="/login"
+          class="inline-flex items-center justify-center bg-[#2E7D32] hover:bg-[#256628] text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap">
+          Premium Login / Register
+        </a>
+      }
     </div>
 
     <!-- Mobile / Tablet Hamburger Button -->
@@ -53,24 +68,37 @@
       <a routerLink="/all-news" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
         News
       </a>
-      <a href="#about" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
+      <a href="/#about" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
         About Us
       </a>
-      <a href="#grades" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
+      <a href="/#grades" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
         Coffee Grades
       </a>
-      <a href="#data-teaser" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
+      <a href="/#market" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
         Market Data
       </a>
-      <a href="#contact" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#333333] hover:bg-[#FDFCF5] hover:text-[#2E7D32] font-medium transition-colors">
-        Contact
+      <a routerLink="/purchase-coffee" (click)="closeMenu()" class="px-3 py-2.5 rounded-lg text-[#2E7D32] hover:bg-[#FDFCF5] font-semibold transition-colors flex items-center justify-between">
+        <span>Purchase Coffee</span>
+        @if (cart.totalItems() > 0) {
+          <span class="px-2 py-0.5 rounded-full bg-[#2E7D32] text-white text-xs">{{ cart.totalItems() }}</span>
+        }
       </a>
-      <a
-        routerLink="/login"
-        (click)="closeMenu()"
-        class="mt-2 text-center bg-[#2E7D32] hover:bg-[#256628] text-white font-medium py-3 rounded-lg shadow-xs transition-colors">
-        Premium Login / Register
-      </a>
+
+      @if (auth.isLoggedIn()) {
+        <a
+          [routerLink]="getStaffHomeRoute()"
+          (click)="closeMenu()"
+          class="mt-2 text-center bg-[#4B3621] hover:bg-[#3A2919] text-white font-medium py-3 rounded-lg shadow-xs transition-colors">
+          Staff Workspace ({{ auth.currentUser()?.role }})
+        </a>
+      } @else {
+        <a
+          routerLink="/login"
+          (click)="closeMenu()"
+          class="mt-2 text-center bg-[#2E7D32] hover:bg-[#256628] text-white font-medium py-3 rounded-lg shadow-xs transition-colors">
+          Premium Login / Register
+        </a>
+      }
     </div>
   }
 </nav>

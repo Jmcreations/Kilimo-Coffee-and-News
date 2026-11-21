@@ -6,12 +6,14 @@ import { PostNews } from './components/post-news/post-news';
 import { Login } from './components/login/login';
 import { DeliveryOrders } from './components/delivery-orders/delivery-orders';
 import { AdminDashboard } from './components/admin-dashboard/admin-dashboard';
+import { PurchaseCoffee } from './components/purchase-coffee/purchase-coffee';
 import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'all-news', component: AllNews },
   { path: 'news/:id', component: NewsDetail },
+  { path: 'purchase-coffee', component: PurchaseCoffee },
   { path: 'login', component: Login },
   {
     path: 'post-news',
@@ -31,6 +33,5 @@ export const routes: Routes = [
     canActivate: [roleGuard],
     data: { roles: ['admin'] }
   },
-  // Fallback: redirect any unknown URL back to the home page
   { path: '**', redirectTo: '' }
 ];
