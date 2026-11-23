@@ -1,26 +1,24 @@
-<section class="min-h-screen bg-[#FDFCF5] py-10 sm:py-16 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-3xl mx-auto">
+<section class="min-h-screen bg-[#FDFCF5] pb-16 sm:pb-24">
 
-    <a
-      routerLink="/all-news"
-      class="inline-flex items-center gap-2 text-sm font-medium text-[#2E7D32] hover:text-[#256628] mb-8 transition-colors">
-      <span>&larr;</span>
-      <span>Back to All News</span>
-    </a>
-
-    @if (loading()) {
-      <div class="bg-white rounded-2xl border border-[#4B3621]/10 p-8 space-y-4 animate-pulse">
+  @if (loading()) {
+    <!-- Skeleton State -->
+    <div class="h-56 sm:h-72 bg-[#4B3621]/15 animate-pulse"></div>
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 -mt-14 relative z-10">
+      <div class="bg-white rounded-2xl border border-[#4B3621]/10 p-6 sm:p-10 space-y-4 animate-pulse shadow-sm">
         <div class="h-4 w-28 bg-[#2E7D32]/20 rounded-full"></div>
-        <div class="h-9 w-4/5 bg-[#4B3621]/15 rounded"></div>
+        <div class="h-8 w-4/5 bg-[#4B3621]/15 rounded"></div>
         <div class="h-4 w-1/2 bg-[#4B3621]/10 rounded"></div>
-        <div class="space-y-2.5 pt-4">
+        <div class="space-y-3 pt-6">
           <div class="h-4 w-full bg-[#4B3621]/10 rounded"></div>
           <div class="h-4 w-full bg-[#4B3621]/10 rounded"></div>
-          <div class="h-4 w-3/4 bg-[#4B3621]/10 rounded"></div>
+          <div class="h-4 w-5/6 bg-[#4B3621]/10 rounded"></div>
         </div>
       </div>
-    } @else if (error() || !article()) {
-      <div class="bg-white rounded-2xl border border-[#4B3621]/15 p-10 text-center space-y-4">
+    </div>
+  } @else if (error() || !article()) {
+    <!-- Error State -->
+    <div class="max-w-2xl mx-auto px-4 pt-16">
+      <div class="bg-white rounded-2xl border border-[#4B3621]/15 p-8 sm:p-10 text-center space-y-4 shadow-xs">
         <p class="font-serif text-2xl text-[#4B3621]">Could not load article. Please try again.</p>
         <a
           routerLink="/all-news"
@@ -28,51 +26,121 @@
           Return to News
         </a>
       </div>
-    } @else if (article(); as post) {
-      <article class="bg-white rounded-2xl border border-[#4B3621]/10 shadow-xs p-6 sm:p-10">
+    </div>
+  } @else if (article(); as post) {
 
-        <!-- Article Header & Author Attribution -->
-        <header class="pb-6 mb-8 border-b border-[#4B3621]/10">
-          <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm mb-4">
-            <span class="px-3 py-1 rounded-full bg-[#2E7D32] text-white font-semibold">
+    <!-- Editorial Top Banner (Category Artwork + Breadcrumb) -->
+    <div class="relative h-56 sm:h-72 bg-[#2C1E12] overflow-hidden">
+      <img
+        [src]="newsService.getCategoryCover(post.category)"
+        [alt]="post.category"
+        class="w-full h-full object-cover opacity-45"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#2C1E12] via-[#2C1E12]/60 to-black/30"></div>
+
+      <div class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 flex items-center justify-between">
+        <a
+          routerLink="/all-news"
+          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xs text-white text-xs sm:text-sm font-medium transition-colors">
+          <span>&larr;</span>
+          <span>All News</span>
+        </a>
+
+        <button
+          type="button"
+          (click)="shareArticle()"
+          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xs text-white text-xs sm:text-sm font-medium transition-colors cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+          </svg>
+          <span>{{ copiedLink() ? 'Link Copied!' : 'Share' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Overlapping Main Editorial Card -->
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 -mt-20 sm:-mt-24 relative z-10">
+      <article class="bg-white rounded-2xl sm:rounded-3xl border border-[#4B3621]/12 shadow-md overflow-hidden">
+
+        <!-- Article Header -->
+        <header class="p-6 sm:p-10 pb-6 sm:pb-8 bg-gradient-to-b from-[#FDFCF5]/70 to-white border-b border-[#4B3621]/10">
+          <div class="flex flex-wrap items-center gap-2.5 text-xs sm:text-sm mb-4">
+            <span class="px-3 py-1 rounded-full bg-[#2E7D32] text-white font-semibold tracking-wide">
               {{ post.category }}
             </span>
-            <span class="text-[#333333]/70">{{ post.date }} &bull; {{ post.readTime }}</span>
+            <span class="text-[#4B3621]/70 font-medium">{{ post.date }}</span>
+            <span class="text-[#4B3621]/40">&bull;</span>
+            <span class="text-[#4B3621]/70">{{ post.readTime }}</span>
           </div>
 
-          <h1 class="font-serif text-3xl sm:text-4xl font-semibold text-[#4B3621] leading-tight mb-4">
+          <h1 class="font-serif text-2xl sm:text-4xl lg:text-[42px] font-semibold text-[#4B3621] leading-snug sm:leading-tight mb-6">
             {{ post.title }}
           </h1>
 
-          <div class="flex items-center gap-2.5 text-sm text-[#4B3621]">
-            <span class="w-8 h-8 rounded-full bg-[#4B3621]/10 flex items-center justify-center font-serif font-bold text-xs">
-              {{ post.author.charAt(0) }}
+          <!-- Author Byline Bar -->
+          <div class="flex items-center justify-between gap-3 pt-4 border-t border-[#4B3621]/10">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-[#4B3621] text-[#FDFCF5] flex items-center justify-center font-serif font-bold text-sm shadow-2xs shrink-0">
+                {{ post.author.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <div class="text-xs uppercase tracking-wider text-[#333333]/55 font-semibold">Reported By</div>
+                <div class="text-sm sm:text-base font-semibold text-[#4B3621]">{{ post.author }}</div>
+              </div>
+            </div>
+
+            <span class="hidden sm:inline-block text-xs font-medium px-3 py-1 rounded-full bg-[#FDFCF5] border border-[#4B3621]/15 text-[#4B3621]/80">
+              Kilimo News Desk
             </span>
-            <span>Reported by <strong>{{ post.author }}</strong></span>
           </div>
         </header>
 
-        <!-- Actual Article Content (Top / Primary Body) -->
-        <div class="text-base sm:text-lg text-[#333333] leading-relaxed whitespace-pre-line">
-          {{ post.content }}
+        <!-- Article Body (Formatted Editorial Paragraphs with Drop Cap) -->
+        <div class="p-6 sm:p-10 space-y-5 text-[16px] sm:text-[18px] text-[#2B2B2B] leading-[1.8]">
+          @for (para of paragraphs(); track $index; let isFirst = $first) {
+            <p
+              [class]="isFirst
+                ? 'first-letter:float-left first-letter:font-serif first-letter:text-4xl sm:first-letter:text-5xl first-letter:font-bold first-letter:text-[#2E7D32] first-letter:mr-3 first-letter:leading-none'
+                : ''">
+              {{ para }}
+            </p>
+          }
         </div>
 
         <!-- Uploaded Photo Placed BELOW the Actual Article -->
         @if (newsService.getImageUrl(post.contentImage); as uploadedPhoto) {
-          <figure class="mt-8 pt-8 border-t border-[#4B3621]/10">
+          <figure class="mx-6 sm:mx-10 mb-8 sm:mb-10 p-3 sm:p-4 rounded-2xl bg-[#FDFCF5] border border-[#4B3621]/15">
             <img
               [src]="uploadedPhoto"
               [alt]="post.title"
-              class="w-full max-h-[520px] object-cover rounded-2xl border border-[#4B3621]/15 shadow-xs"
+              class="w-full max-h-[520px] object-cover rounded-xl shadow-2xs"
             />
-            <figcaption class="mt-2.5 text-xs text-[#333333]/65 text-center">
-              Field report attachment &mdash; {{ post.title }}
+            <figcaption class="mt-3 px-1 flex items-center justify-between gap-2 text-xs text-[#4B3621]/75">
+              <span>Field report photo &mdash; {{ post.title }}</span>
+              <span class="font-medium text-[#2E7D32] shrink-0">{{ post.category }}</span>
             </figcaption>
           </figure>
         }
 
-      </article>
-    }
+        <!-- Bottom Editorial Footer & Store Callout -->
+        <footer class="px-6 sm:px-10 py-6 bg-[#FDFCF5] border-t border-[#4B3621]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <a
+            routerLink="/all-news"
+            class="inline-flex items-center gap-2 text-sm font-semibold text-[#4B3621] hover:text-[#2E7D32] transition-colors">
+            <span>&larr;</span>
+            <span>More Coffee Industry Stories</span>
+          </a>
 
-  </div>
+          <a
+            routerLink="/purchase-coffee"
+            class="btn-feedback inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-[#2E7D32] hover:bg-[#256628] text-white text-xs sm:text-sm font-semibold">
+            Explore Kenyan Coffee Lots &rarr;
+          </a>
+        </footer>
+
+      </article>
+    </div>
+
+  }
 </section>
