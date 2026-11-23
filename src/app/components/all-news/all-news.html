@@ -1,94 +1,165 @@
-<section class="pt-[115px] pb-16 bg-[#FDFCF5] min-h-screen">
-  <div class="max-w-7xl mx-auto px-6">
+<section class="min-h-screen bg-[#FDFCF5] py-10 sm:py-16 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
 
-    <!-- Top Bar -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-      <div>
-        <a routerLink="/" class="inline-flex items-center gap-2 text-[#2E7D32] hover:text-[#2E7D32]/80 mb-3 font-medium transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-          Back Home
-        </a>
-        <h1 class="font-serif text-4xl text-[#4B3621]">All Coffee News & Reports</h1>
-      </div>
+    <!-- Header -->
+    <div class="mb-8">
+      <a routerLink="/" class="inline-flex items-center gap-1.5 text-sm font-medium text-[#2E7D32] hover:underline mb-3">
+        <span>&larr;</span>
+        <span>Back to Home</span>
+      </a>
+      <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#4B3621] mb-2">
+        All Coffee Industry News
+      </h1>
+      <p class="text-sm sm:text-base text-[#333333]/75">
+        Search reports by headline or filter articles by category and publication date
+      </p>
+    </div>
 
-      @if (loading) {
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @for (skeleton of [1, 2, 3]; track skeleton) {
-      <div class="bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden animate-pulse">
-        <div class="h-52 w-full bg-[#4B3621]/10"></div>
-        <div class="p-6 space-y-3">
-          <div class="h-4 w-24 rounded-full bg-[#2E7D32]/20"></div>
-          <div class="h-6 w-4/5 rounded bg-[#4B3621]/15"></div>
-          <div class="h-4 w-full rounded bg-[#4B3621]/10"></div>
-          <div class="h-4 w-2/3 rounded bg-[#4B3621]/10"></div>
+    <!-- SEARCH & FILTER BAR -->
+    <div class="bg-white rounded-2xl border border-[#4B3621]/15 p-4 sm:p-6 shadow-2xs mb-8 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
+
+        <!-- Title Search Input -->
+        <div class="md:col-span-6 relative">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-[#4B3621] mb-1">
+            Search by Title
+          </label>
+          <input
+            type="text"
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            placeholder="e.g. Sale 8, Nyeri AA, auction prices..."
+            class="w-full px-4 py-2.5 rounded-xl border border-[#4B3621]/20 focus:outline-none focus:border-[#2E7D32] text-sm"
+          />
         </div>
-      </div>
-    }
-  </div>
-}
 
-      <!-- Category Filter Pills -->
-      <div class="flex flex-wrap gap-2">
-        <button
-          *ngFor="let cat of categories"
-          (click)="filterByCategory(cat)"
-          [class.bg-[#2E7D32]]="selectedCategory === cat"
-          [class.text-white]="selectedCategory === cat"
-          [class.bg-white]="selectedCategory !== cat"
-          [class.text-[#4B3621]]="selectedCategory !== cat"
-          class="px-4 py-2 rounded-full text-xs font-medium border border-[#4B3621]/10 transition-colors shadow-sm"
-        >
-          {{ cat }}
-        </button>
+        <!-- Date Posted Filter -->
+        <div class="md:col-span-3">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-[#4B3621] mb-1">
+            Date Posted
+          </label>
+          <input
+            type="date"
+            [ngModel]="selectedDate()"
+            (ngModelChange)="selectedDate.set($event)"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-[#4B3621]/20 focus:outline-none focus:border-[#2E7D32] text-sm bg-white"
+          />
+        </div>
+
+        <!-- Sort Order -->
+        <div class="md:col-span-3">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-[#4B3621] mb-1">
+            Sort Order
+          </label>
+          <select
+            [ngModel]="sortOrder()"
+            (ngModelChange)="sortOrder.set($event)"
+            class="w-full px-3.5 py-2.5 rounded-xl border border-[#4B3621]/20 focus:outline-none focus:border-[#2E7D32] text-sm bg-white">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Category Pills & Reset Action -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#4B3621]/10">
+        <div class="flex flex-wrap gap-2">
+          @for (cat of categories; track cat) {
+            <button
+              type="button"
+              (click)="selectedCategory.set(cat)"
+              [class]="selectedCategory() === cat
+                ? 'bg-[#4B3621] text-white'
+                : 'bg-[#FDFCF5] text-[#4B3621] border border-[#4B3621]/15 hover:border-[#2E7D32]'"
+              class="px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer">
+              {{ cat }}
+            </button>
+          }
+        </div>
+
+        <div class="flex items-center gap-3 text-xs">
+          <span class="text-[#333333]/70">
+            Showing <strong>{{ filteredArticles().length }}</strong> of {{ allArticles().length }} articles
+          </span>
+
+          @if (hasActiveFilters()) {
+            <button
+              type="button"
+              (click)="clearFilters()"
+              class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 font-semibold cursor-pointer">
+              Reset Filters
+            </button>
+          }
+        </div>
       </div>
     </div>
 
-    <!-- Grid of All Articles -->
-    <div class="grid md:grid-cols-3 gap-6">
-      <article
-        *ngFor="let article of filteredArticles"
-        [routerLink]="['/news', article._id || article._id || article.id]"
-        [queryParams]="{ from: 'all'}"
-        class="group bg-white rounded-lg overflow-hidden border border-[#4B3621]/10 hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col justify-between"
-      >
-        <div>
-          <div class="relative h-48 overflow-hidden">
-            <img [src]="newsService.getImageUrl(article.contentImage, article.category)"
-            [alt]="article.title" ... />
-            <div class="absolute top-3 left-3">
-              <span class="bg-[#2E7D32] text-white text-xs px-2.5 py-1 rounded-full font-medium">
+    <!-- ARTICLES GRID -->
+    @if (loading()) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (n of [1, 2, 3, 4, 5, 6]; track n) {
+          <div class="bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden animate-pulse">
+            <div class="h-52 bg-[#4B3621]/10"></div>
+            <div class="p-6 space-y-3">
+              <div class="h-4 w-24 bg-[#2E7D32]/20 rounded-full"></div>
+              <div class="h-6 w-4/5 bg-[#4B3621]/15 rounded"></div>
+              <div class="h-4 w-full bg-[#4B3621]/10 rounded"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (filteredArticles().length === 0) {
+      <div class="bg-white rounded-2xl border border-[#4B3621]/15 p-12 text-center space-y-3">
+        <p class="font-serif text-2xl text-[#4B3621]">No matching articles found</p>
+        <p class="text-sm text-[#333333]/70">
+          Try clearing the date filter or searching with a different keyword.
+        </p>
+        @if (hasActiveFilters()) {
+          <button
+            type="button"
+            (click)="clearFilters()"
+            class="btn-feedback px-5 py-2.5 rounded-xl bg-[#2E7D32] text-white text-xs sm:text-sm font-semibold">
+            Clear All Filters
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (article of filteredArticles(); track article._id || article.id) {
+          <article
+            [routerLink]="['/news', article._id || article.id]"
+            class="card-feedback group bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden flex flex-col">
+            <div class="relative h-52 overflow-hidden bg-[#4B3621]/5">
+              <img
+                [src]="newsService.getImageUrl(article.contentImage, article.category)"
+                [alt]="article.title"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <span class="absolute top-3.5 left-3.5 bg-[#2E7D32] text-white text-xs font-semibold px-3 py-1 rounded-full">
                 {{ article.category }}
               </span>
             </div>
-          </div>
-          <div class="p-5">
-            <div class="flex items-center gap-3 text-xs text-[#333333]/60 mb-2">
-              <span>{{ article.date }}</span>
-              <span>•</span>
-              <span>{{ article.readTime }}</span>
+
+            <div class="p-6 flex-1 flex flex-col">
+              <div class="text-xs text-[#333333]/65 mb-2">
+                {{ article.date }} &bull; By {{ article.author }}
+              </div>
+              <h2 class="font-serif text-xl text-[#4B3621] group-hover:text-[#2E7D32] transition-colors line-clamp-2 mb-3">
+                {{ article.title }}
+              </h2>
+              <p class="text-sm text-[#333333]/75 line-clamp-3 mb-4 flex-1">
+                {{ article.content }}
+              </p>
+              <span class="inline-flex items-center gap-1 text-sm font-medium text-[#2E7D32]">
+                Read Full Article
+                <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+              </span>
             </div>
-            <h2 class="font-serif text-lg text-[#4B3621] mb-2 group-hover:text-[#2E7D32] transition-colors line-clamp-2">
-              {{ article.title }}
-            </h2>
-            <p class="text-sm text-[#333333]/70 line-clamp-3 mb-4">
-              {{ article.content }}
-            </p>
-          </div>
-        </div>
-
-        <div class="px-5 pb-5 pt-0">
-          <div class="flex items-center gap-2 text-sm text-[#2E7D32] font-semibold">
-            <span>Read Full Report</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="!loading && filteredArticles.length === 0" class="text-center py-20 text-[#333333]/60">
-      No articles found in this category.
-    </div>
+          </article>
+        }
+      </div>
+    }
 
   </div>
 </section>

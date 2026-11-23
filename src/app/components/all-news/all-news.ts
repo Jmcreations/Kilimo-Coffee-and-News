@@ -1,57 +1,109 @@
-import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { NewsService } from '../../services/news.service'; // Adjust relative path if needed
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+import { NewsArticle, NewsService } from '../../services/news.service';
 
 @Component({
   selector: 'app-all-news',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './all-news.html',
   styleUrl: './all-news.scss'
 })
 export class AllNews implements OnInit {
-  public newsService = inject(NewsService);
-  private cdr = inject(ChangeDetectorRef);
+  newsService = inject(NewsService);
 
-  articles: any[] = [];
-  filteredArticles: any[] = [];
-  selectedCategory: string = 'All';
-  categories: string[] = ['All', 'Market Report', 'Trade Policies', 'Farming Innovation', 'Cooperative News'];
-  loading: boolean = true;
+  allArticles = signal<NewsArticle[]>([]);
+  loading = signal<boolean>(true);
+  errorMessage = signal<string>('');
+
+  // Search & Filter Signals
+  searchQuery = signal<string>('');
+  selectedCategory = signal<string>('All');
+  selectedDate = signal<string>(''); // YYYY-MM-DD from <input type="date">
+  sortOrder = signal<'newest' | 'oldest'>('newest');
+
+  readonly categories = [
+    'All',
+    'Market Report',
+    'Cooperative News',
+    'Farming Innovation',
+    'Trade Policies'
+  ];
+
+  filteredArticles = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    const category = this.selectedCategory();
+    const dateFilter = this.selectedDate();
+    const order = this.sortOrder();
+
+    const filtered = this.allArticles().filter((article) => {
+      // 1. Search by title (and author)
+      const matchesTitle =
+        !query ||
+        article.title.toLowerCase().includes(query) ||
+        (article.author && article.author.toLowerCase().includes(query));
+
+      // 2. Filter by category
+      const matchesCategory =
+        category === 'All' ||
+        article.category.toLowerCase() === category.toLowerCase();
+
+      // 3. Filter by exact date posted
+      const matchesDate =
+        !dateFilter || this.toIsoDateString(article.date) === dateFilter;
+
+      return matchesTitle && matchesCategory && matchesDate;
+    });
+
+    return order === 'oldest' ? [...filtered].reverse() : filtered;
+  });
+
+  hasActiveFilters = computed(
+    () =>
+      this.searchQuery().trim() !== '' ||
+      this.selectedCategory() !== 'All' ||
+      this.selectedDate() !== ''
+  );
 
   ngOnInit(): void {
-    this.newsService.getArticles().subscribe({
-      next: (data) => {
-        this.articles = data || [];
-        this.filteredArticles = this.articles;
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error fetching all news:', err);
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
-    });
+    this.fetchArticles();
   }
 
-  filterByCategory(category: string): void {
-    this.selectedCategory = category;
-    if (category === 'All') {
-      this.filteredArticles = this.articles;
-    } else {
-      this.filteredArticles = this.articles.filter(a => a.category === category);
-    }
+  fetchArticles(): void {
+    this.loading.set(true);
+    this.errorMessage.set('');
+
+    this.newsService
+      .getArticles()
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (data: NewsArticle[]) => {
+          this.allArticles.set(Array.isArray(data) ? data : []);
+        },
+        error: () => {
+          this.errorMessage.set('Could not load news articles. Please try again.');
+        }
+      });
   }
 
-  getCategoryCover(category: string): string {
-    const coverMap: Record<string, string> = {
-      'Market Report': '/Images/Market-Report.jpg',
-      'Trade Policies': '/Images/Trade-Policies.jpg',
-      'Farming Innovation': '/Images/Farming-Innovation.jpg',
-      'Cooperative News': '/Images/Cooperative-news.jpg'
-    };
-    return coverMap[category] || '/Images/default.jpg';
+  clearFilters(): void {
+    this.searchQuery.set('');
+    this.selectedCategory.set('All');
+    this.selectedDate.set('');
+    this.sortOrder.set('newest');
+  }
+
+  // Converts stored "November 21, 2026" string into "2026-11-21" for <input type="date"> comparison
+  private toIsoDateString(dateStr?: string): string {
+    if (!dateStr) return '';
+    const parsed = new Date(dateStr);
+    if (Number.isNaN(parsed.getTime())) return '';
+    const year = parsed.getFullYear();
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
+    const day = String(parsed.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
