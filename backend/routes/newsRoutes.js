@@ -1,27 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const mongoose = require('mongoose');
 const News = require('../models/news');
 const { verifyToken, authorizeRoles } = require('../middleware/auth');
-
-const uploadsDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (_req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${uniqueSuffix}${path.extname(file.originalname)}`);
-  }
-});
+const { uploadBufferToCloudinary, deleteFromCloudinary } = require('../config/cloudinary');
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 8 * 1024 * 1024 } // 8 MB max image upload
 });
 
@@ -38,7 +24,7 @@ function canManageArticle(user, article) {
   return false;
 }
 
-// GET /api/news - Public list of all articles
+// GET /api/news
 router.get('/', async (_req, res) => {
   try {
     const articles = await News.find().sort({ _id: -1 });
@@ -48,7 +34,7 @@ router.get('/', async (_req, res) => {
   }
 });
 
-// GET /api/news/:id - Public single article
+// GET /api/news/:id
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -67,7 +53,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/news - Create article (Journalist or Admin)
+// POST /api/news
 router.post(
   '/',
   verifyToken,
@@ -75,7 +61,7 @@ router.post(
   upload.single('contentImage'),
   async (req, res) => {
     try {
-      const { title, category, readTime, content, author } = req.body;
+      const { title, category, readTime, content } = req.body;
       if (!title || !category || !content) {
         return res.status(400).json({ message: 'Title, category, and content are required.' });
       }
@@ -86,11 +72,19 @@ router.post(
         year: 'numeric'
       });
 
-      // Journalists are always acknowledged under their logged-in account name
       const creditedAuthor =
-      req.user.role === 'admin'
-        ? 'Henry Kinyua'
-        : req.user.name || 'Kilimo News Desk';
+        req.user.role === 'admin'
+          ? 'Henry Kinyua'
+          : req.user.name || 'Kilimo News Desk';
+
+      let contentImage = null;
+      let contentImagePublicId = null;
+
+      if (req.file) {
+        const uploaded = await uploadBufferToCloudinary(req.file.buffer, 'kilimo-news');
+        contentImage = uploaded.secure_url;
+        contentImagePublicId = uploaded.public_id;
+      }
 
       const newArticle = new News({
         title: title.trim(),
@@ -98,7 +92,8 @@ router.post(
         date: formattedDate,
         readTime: readTime?.trim() || '3 min read',
         content: content.trim(),
-        contentImage: req.file ? `/uploads/${req.file.filename}` : null,
+        contentImage,
+        contentImagePublicId,
         author: creditedAuthor,
         authorId: req.user.id
       });
@@ -111,7 +106,7 @@ router.post(
   }
 );
 
-// PUT /api/news/:id - Edit own article (Journalist) or any article (Admin)
+// PUT /api/news/:id
 router.put(
   '/:id',
   verifyToken,
@@ -133,7 +128,7 @@ router.put(
         return res.status(403).json({ message: 'You can only edit articles that you authored.' });
       }
 
-      const { title, category, readTime, content, author } = req.body;
+      const { title, category, readTime, content } = req.body;
       if (title) article.title = title.trim();
       if (category) article.category = category.trim();
       if (readTime) article.readTime = readTime.trim();
@@ -141,14 +136,18 @@ router.put(
 
       if (req.user.role === 'admin') {
         article.author = 'Henry Kinyua';
-      }
-      else {
+      } else {
         article.author = req.user.name;
         article.authorId = req.user.id;
       }
 
       if (req.file) {
-        article.contentImage = `/uploads/${req.file.filename}`;
+        if (article.contentImagePublicId) {
+          await deleteFromCloudinary(article.contentImagePublicId);
+        }
+        const uploaded = await uploadBufferToCloudinary(req.file.buffer, 'kilimo-news');
+        article.contentImage = uploaded.secure_url;
+        article.contentImagePublicId = uploaded.public_id;
       }
 
       const updatedArticle = await article.save();
@@ -159,7 +158,7 @@ router.put(
   }
 );
 
-// DELETE /api/news/:id - Delete own article (Journalist) or any article (Admin)
+// DELETE /api/news/:id
 router.delete(
   '/:id',
   verifyToken,
@@ -178,6 +177,10 @@ router.delete(
 
       if (!canManageArticle(req.user, article)) {
         return res.status(403).json({ message: 'You can only delete articles that you authored.' });
+      }
+
+      if (article.contentImagePublicId) {
+        await deleteFromCloudinary(article.contentImagePublicId);
       }
 
       await News.findByIdAndDelete(id);

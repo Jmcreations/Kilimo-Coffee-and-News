@@ -7,6 +7,7 @@ const newsSchema = new mongoose.Schema({
   readTime: { type: String, default: '3 min read' },
   content: { type: String, required: true },
   contentImage: { type: String, default: null },
+  contentImagePublicId: { type: String, default: null },
   author: { type: String, default: 'Kilimo News Desk' },
   authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }
 });

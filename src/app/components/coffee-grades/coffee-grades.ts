@@ -1,75 +1,73 @@
+// src/app/components/coffee-grades/coffee-grades.ts
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
-interface CoffeeGrade {
-  grade: string;
+export interface CoffeeGradeItem {
+  code: string;
+  name: string;
   screenSize: string;
-  flavor: string;
-  region: string;
+  profile: string;
   image: string;
-  premium: boolean;
+  tag: string;
 }
 
 @Component({
   selector: 'app-coffee-grades',
   standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './coffee-grades.html',
   styleUrl: './coffee-grades.scss'
 })
-export class CoffeeGradesComponent {
-  hoveredGrade: string | null = null;
-
-  coffeeGrades: CoffeeGrade[] = [
+export class CoffeeGrades {
+  grades: CoffeeGradeItem[] = [
     {
-      grade: 'AA',
-      screenSize: '7.20mm+',
-      flavor: 'Complex, wine-like acidity with bright citrus notes and full body',
-      region: 'Nyeri, Kirinyaga, Murang\'a',
-      image: 'https://images.unsplash.com/photo-1777984994623-6e96b0d6be43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600',
-      premium: true,
+      code: 'AA',
+      name: 'Kenya AA',
+      screenSize: 'Screen 17/18 (7.2mm+)',
+      profile: 'Flagship large bean with bright blackcurrant acidity, floral aromatics, and full winey body.',
+      image: encodeURI('/Images/Grade AA.jpg'),
+      tag: 'Top Export Auction Grade'
     },
     {
-      grade: 'AB',
-      screenSize: '6.80mm - 7.19mm',
-      flavor: 'Balanced with medium body, sweet berry notes and smooth finish',
-      region: 'Central Kenya, Mt. Kenya Region',
-      image: 'https://images.unsplash.com/photo-1774801935463-15275f0bcc8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600',
-      premium: true,
+      code: 'AB',
+      name: 'Kenya AB',
+      screenSize: 'Screen 15/16 (6.2–6.8mm)',
+      profile: 'Balanced blend of A and B screens offering vibrant citrus notes, rich sweetness, and crisp finish.',
+      image: encodeURI('/Images/Grade AB.jpg'),
+      tag: 'Most Traded Lot'
     },
     {
-      grade: 'PB (Peaberry)',
-      screenSize: '6.80mm+',
-      flavor: 'Intense, concentrated flavor with enhanced sweetness and clarity',
-      region: 'Kiambu, Embu',
-      image: 'https://images.unsplash.com/photo-1733860442931-93f15b1baa66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600',
-      premium: true,
+      code: 'PB',
+      name: 'Peaberry (PB)',
+      screenSize: 'Single Oval Bean',
+      profile: 'Naturally occurring single-seed cherry concentrating complex berry sweetness and high aroma.',
+      image: encodeURI('/Images/Grade PB.jpg'),
+      tag: 'Specialty Micro-Lot'
     },
     {
-      grade: 'C',
-      screenSize: '6.20mm - 6.79mm',
-      flavor: 'Lighter body with mild acidity, subtle fruit notes',
-      region: 'Various regions',
-      image: 'https://images.unsplash.com/photo-1567613747256-9f97205d23d2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600',
-      premium: false,
+      code: 'C',
+      name: 'Kenya C',
+      screenSize: 'Screen 12–14',
+      profile: 'Clean, medium-bodied cup ideal for smooth espresso blends and consistent daily roasting.',
+      image: encodeURI('/Images/Grade C.jpg'),
+      tag: 'Commercial Blend Favorite'
     },
     {
-      grade: 'E (Elephant)',
-      screenSize: '8.00mm+',
-      flavor: 'Rare grade with robust character and distinctive profile',
-      region: 'Limited availability',
-      image: 'https://images.unsplash.com/photo-1733860474255-a6703e787cad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600',
-      premium: true,
+      code: 'E',
+      name: 'Elephant (E)',
+      screenSize: 'Screen 20+ Giant Bean',
+      profile: 'Rare extra-large twin beans sorted separately for bold, heavy-bodied specialty roasts.',
+      image: encodeURI('/Images/Grade E.jpg'),
+      tag: 'Rare Large Screen'
     },
     {
-      grade: 'TT',
-      screenSize: 'Small beans from AA/AB',
-      flavor: 'Light, delicate with good clarity despite smaller size',
-      region: 'Secondary sorting',
-      image: 'https://images.unsplash.com/photo-1774801935463-15275f0bcc8f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600',
-      premium: false,
-    },
+      code: 'TT',
+      name: 'Kenya TT',
+      screenSize: 'Light Density Air-Sorted',
+      profile: 'Air-separated lighter beans from AA and AB lots delivering mild acidity and approachable sweetness.',
+      image: encodeURI('/Images/Grade TT.jpg'),
+      tag: 'Value Roast Grade'
+    }
   ];
-
-  setHoveredGrade(grade: string | null) {
-    this.hoveredGrade = grade;
-  }
 }

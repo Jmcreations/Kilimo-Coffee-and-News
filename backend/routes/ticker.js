@@ -1,16 +1,22 @@
-const express = require('express');
-const router = express.Router();
+const mongoose = require('mongoose');
 
-// GET /api/ticker - Return live/latest Nairobi Coffee Exchange (NCE) grades
-router.get('/', (req, res) => {
-  res.status(200).json([
-    { grade: 'KENYA AA', price: '612.50', unit: 'USD/50kg', change: '+8.25', isPositive: true },
-    { grade: 'KENYA AB', price: '548.00', unit: 'USD/50kg', change: '+5.10', isPositive: true },
-    { grade: 'KENYA PB', price: '590.75', unit: 'USD/50kg', change: '-3.50', isPositive: false },
-    { grade: 'KENYA C', price: '420.00', unit: 'USD/50kg', change: '0.00', isPositive: true },
-    { grade: 'KENYA E', price: '645.00', unit: 'USD/50kg', change: '+12.00', isPositive: true },
-    { grade: 'KENYA TT', price: '390.50', unit: 'USD/50kg', change: '-1.25', isPositive: false }
-  ]);
-});
+const gradeEntrySchema = new mongoose.Schema(
+  {
+    grade: { type: String, enum: ['AA', 'AB', 'PB', 'C', 'E', 'TT'], required: true },
+    price: { type: Number, required: true },      // USD per 50kg bag
+    change: { type: Number, default: 0 },         // +/- vs that grade's prior sale price
+    lastSaleNumber: { type: Number, required: true }
+  },
+  { _id: false }
+);
 
-module.exports = router;
+const tickerSchema = new mongoose.Schema(
+  {
+    latestSaleNumber: { type: Number, required: true, default: 1 },
+    lastSaleDate: { type: String, default: '' },
+    grades: { type: [gradeEntrySchema], required: true }
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model('Ticker', tickerSchema);

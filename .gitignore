@@ -56,3 +56,4 @@ backend/.env.*
 # Backend runtime uploads
 backend/uploads/*
 !backend/uploads/.gitkeep
+.browserslistrc

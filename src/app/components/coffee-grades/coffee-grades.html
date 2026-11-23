@@ -1,181 +1,54 @@
-<section id="grades" class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+<!-- src/app/components/coffee-grades/coffee-grades.html -->
+<section id="grades" class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white border-t border-[#4B3621]/10">
   <div class="max-w-7xl mx-auto">
 
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-      <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#4B3621] mb-4">
-        Discover Kenyan Coffee Excellence
+    <div class="max-w-2xl mb-12">
+      <span class="inline-block px-3 py-1 rounded-full bg-[#2E7D32]/10 text-[#2E7D32] text-xs font-semibold uppercase tracking-wider mb-3">
+        NCE Classification Standards
+      </span>
+      <h2 class="font-serif text-3xl sm:text-4xl text-[#4B3621] mb-3">
+        Kenyan Coffee Grades
       </h2>
-      <p class="text-sm sm:text-base lg:text-lg text-[#333333]/75 leading-relaxed">
-        Explore Kenya's internationally acclaimed bean grading system, classified by screen size, bean density, and distinctive cup profile.
+      <p class="text-sm sm:text-base text-[#333333]/75 leading-relaxed">
+        Sorted by bean size, shape, and density at licensed Kenyan mills prior to auction at the Nairobi Coffee Exchange.
       </p>
     </div>
 
-    <!-- Responsive 1 -> 2 -> 3 Column Grade Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-
-      <!-- Grade AA -->
-      <div class="card-feedback group bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden flex flex-col">
-        <div class="relative h-52 overflow-hidden bg-[#4B3621]/10">
-          <img
-            src="/Images/Farming-Innovation.jpg"
-            alt="Kenyan Coffee Grade AA"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 text-white">
-            <h3 class="font-serif text-xl font-semibold">Grade AA</h3>
-            <span class="bg-[#2E7D32] text-white text-xs font-semibold px-3 py-1 rounded-full shrink-0">
-              Screen 18+
+      @for (grade of grades; track grade.code) {
+        <div class="card-feedback group bg-[#FDFCF5] rounded-2xl border border-[#4B3621]/12 overflow-hidden flex flex-col">
+          <div class="relative h-52 overflow-hidden bg-[#2C1E12]">
+            <img
+              [src]="grade.image"
+              [alt]="grade.name"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+            <span class="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-[#4B3621]/90 backdrop-blur-xs text-white text-xs font-semibold">
+              {{ grade.tag }}
+            </span>
+            <span class="absolute bottom-3.5 left-4 font-serif text-2xl font-bold text-white">
+              {{ grade.name }}
             </span>
           </div>
-        </div>
-        <div class="p-6 flex-1 flex flex-col justify-between">
-          <p class="text-sm text-[#333333]/80 leading-relaxed mb-4">
-            Kenya's flagship largest bean grade, prized globally for vibrant wine-like acidity, full body, and complex blackcurrant and floral aromatics.
-          </p>
-          <a href="#contact" class="inline-flex items-center gap-1.5 text-sm font-medium text-[#2E7D32] group-hover:text-[#256628]">
-            <span>Request AA Lots</span>
-            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
-          </a>
-        </div>
-      </div>
 
-      <!-- Grade AB -->
-      <div class="card-feedback group bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden flex flex-col">
-        <div class="relative h-52 overflow-hidden bg-[#4B3621]/10">
-          <img
-            src="/Images/Cooperative-news.jpg"
-            alt="Kenyan Coffee Grade AB"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 text-white">
-            <h3 class="font-serif text-xl font-semibold">Grade AB</h3>
-            <span class="bg-[#2E7D32] text-white text-xs font-semibold px-3 py-1 rounded-full shrink-0">
-              Screen 15–17
-            </span>
+          <div class="p-6 flex-1 flex flex-col">
+            <div class="text-xs font-semibold text-[#2E7D32] mb-2">
+              {{ grade.screenSize }}
+            </div>
+            <p class="text-sm text-[#333333]/80 leading-relaxed flex-1 mb-5">
+              {{ grade.profile }}
+            </p>
+            <a
+              routerLink="/purchase-coffee"
+              class="inline-flex items-center gap-1.5 text-sm font-semibold text-[#4B3621] group-hover:text-[#2E7D32] transition-colors">
+              <span>Shop {{ grade.code }} Lots</span>
+              <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
+            </a>
           </div>
         </div>
-        <div class="p-6 flex-1 flex flex-col justify-between">
-          <p class="text-sm text-[#333333]/80 leading-relaxed mb-4">
-            A balanced combination of A and B screen sizes accounting for the majority of Kenyan exports, delivering crisp citrus brightness and syrupy sweetness.
-          </p>
-          <a href="#contact" class="inline-flex items-center gap-1.5 text-sm font-medium text-[#2E7D32] group-hover:text-[#256628]">
-            <span>Request AB Lots</span>
-            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Grade PB (Peaberry) -->
-      <div class="card-feedback group bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden flex flex-col">
-        <div class="relative h-52 overflow-hidden bg-[#4B3621]/10">
-          <img
-            src="/Images/Market-Report.jpg"
-            alt="Kenyan Coffee Grade PB Peaberry"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 text-white">
-            <h3 class="font-serif text-xl font-semibold">Grade PB (Peaberry)</h3>
-            <span class="bg-[#2E7D32] text-white text-xs font-semibold px-3 py-1 rounded-full shrink-0">
-              Single Bean
-            </span>
-          </div>
-        </div>
-        <div class="p-6 flex-1 flex flex-col justify-between">
-          <p class="text-sm text-[#333333]/80 leading-relaxed mb-4">
-            Rare round single-seed coffee cherries that roast evenly and concentrate natural sugars into a lively, intensely aromatic specialty cup.
-          </p>
-          <a href="#contact" class="inline-flex items-center gap-1.5 text-sm font-medium text-[#2E7D32] group-hover:text-[#256628]">
-            <span>Request PB Lots</span>
-            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Grade C -->
-      <div class="card-feedback group bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden flex flex-col">
-        <div class="relative h-52 overflow-hidden bg-[#4B3621]/10">
-          <img
-            src="/Images/Trade-Policies.jpg"
-            alt="Kenyan Coffee Grade C"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 text-white">
-            <h3 class="font-serif text-xl font-semibold">Grade C</h3>
-            <span class="bg-[#2E7D32] text-white text-xs font-semibold px-3 py-1 rounded-full shrink-0">
-              Screen 12–14
-            </span>
-          </div>
-        </div>
-        <div class="p-6 flex-1 flex flex-col justify-between">
-          <p class="text-sm text-[#333333]/80 leading-relaxed mb-4">
-            Smaller, uniform beans offering gentle acidity, smooth body, and reliable roast consistency for signature espresso and filter blends.
-          </p>
-          <a href="#contact" class="inline-flex items-center gap-1.5 text-sm font-medium text-[#2E7D32] group-hover:text-[#256628]">
-            <span>Request C Lots</span>
-            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Grade E (Elephant) -->
-      <div class="card-feedback group bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden flex flex-col">
-        <div class="relative h-52 overflow-hidden bg-[#4B3621]/10">
-          <img
-            src="/Images/Farming-Innovation.jpg"
-            alt="Kenyan Coffee Grade E Elephant"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 text-white">
-            <h3 class="font-serif text-xl font-semibold">Grade E (Elephant)</h3>
-            <span class="bg-[#2E7D32] text-white text-xs font-semibold px-3 py-1 rounded-full shrink-0">
-              Extra Large
-            </span>
-          </div>
-        </div>
-        <div class="p-6 flex-1 flex flex-col justify-between">
-          <p class="text-sm text-[#333333]/80 leading-relaxed mb-4">
-            Distinctive extra-large beans formed when two seeds develop together, sought after by micro-roasters for bold, distinctive single-origin offerings.
-          </p>
-          <a href="#contact" class="inline-flex items-center gap-1.5 text-sm font-medium text-[#2E7D32] group-hover:text-[#256628]">
-            <span>Request E Lots</span>
-            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Grade TT -->
-      <div class="card-feedback group bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden flex flex-col">
-        <div class="relative h-52 overflow-hidden bg-[#4B3621]/10">
-          <img
-            src="/Images/Cooperative-news.jpg"
-            alt="Kenyan Coffee Grade TT"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 text-white">
-            <h3 class="font-serif text-xl font-semibold">Grade TT</h3>
-            <span class="bg-[#2E7D32] text-white text-xs font-semibold px-3 py-1 rounded-full shrink-0">
-              Light Density
-            </span>
-          </div>
-        </div>
-        <div class="p-6 flex-1 flex flex-col justify-between">
-          <p class="text-sm text-[#333333]/80 leading-relaxed mb-4">
-            Air-separated lighter beans sorted from AA and AB lots, retaining Kenyan flavor notes with a softer, approachable acidity profile.
-          </p>
-          <a href="#contact" class="inline-flex items-center gap-1.5 text-sm font-medium text-[#2E7D32] group-hover:text-[#256628]">
-            <span>Request TT Lots</span>
-            <span class="transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
-          </a>
-        </div>
-      </div>
-
+      }
     </div>
+
   </div>
 </section>
