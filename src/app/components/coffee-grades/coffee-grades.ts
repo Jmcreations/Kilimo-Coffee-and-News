@@ -26,7 +26,7 @@ export class CoffeeGrades {
       name: 'Kenya AA',
       screenSize: 'Screen 17/18 (7.2mm+)',
       profile: 'Flagship large bean with bright blackcurrant acidity, floral aromatics, and full winey body.',
-      image: encodeURI('/Images/Grade AA.jpg'),
+      image: '/Images/grade-aa.jpg',
       tag: 'Top Export Auction Grade'
     },
     {
@@ -34,7 +34,7 @@ export class CoffeeGrades {
       name: 'Kenya AB',
       screenSize: 'Screen 15/16 (6.2–6.8mm)',
       profile: 'Balanced blend of A and B screens offering vibrant citrus notes, rich sweetness, and crisp finish.',
-      image: encodeURI('/Images/Grade AB.jpg'),
+      image: '/Images/grade-ab.jpg',
       tag: 'Most Traded Lot'
     },
     {
@@ -42,7 +42,7 @@ export class CoffeeGrades {
       name: 'Peaberry (PB)',
       screenSize: 'Single Oval Bean',
       profile: 'Naturally occurring single-seed cherry concentrating complex berry sweetness and high aroma.',
-      image: encodeURI('/Images/Grade PB.jpg'),
+      image: '/Images/grade-pb.jpg',
       tag: 'Specialty Micro-Lot'
     },
     {
@@ -50,7 +50,7 @@ export class CoffeeGrades {
       name: 'Kenya C',
       screenSize: 'Screen 12–14',
       profile: 'Clean, medium-bodied cup ideal for smooth espresso blends and consistent daily roasting.',
-      image: encodeURI('/Images/Grade C.jpg'),
+      image: '/Images/grade-c.jpg',
       tag: 'Commercial Blend Favorite'
     },
     {
@@ -58,7 +58,7 @@ export class CoffeeGrades {
       name: 'Elephant (E)',
       screenSize: 'Screen 20+ Giant Bean',
       profile: 'Rare extra-large twin beans sorted separately for bold, heavy-bodied specialty roasts.',
-      image: encodeURI('/Images/Grade E.jpg'),
+      image: '/Images/grade-e.jpg',
       tag: 'Rare Large Screen'
     },
     {
@@ -66,7 +66,7 @@ export class CoffeeGrades {
       name: 'Kenya TT',
       screenSize: 'Light Density Air-Sorted',
       profile: 'Air-separated lighter beans from AA and AB lots delivering mild acidity and approachable sweetness.',
-      image: encodeURI('/Images/Grade TT.jpg'),
+      image: '/Images/grade-tt.jpg',
       tag: 'Value Roast Grade'
     }
   ];

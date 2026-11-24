@@ -66,14 +66,14 @@ export class NewsService {
 
   getCategoryCover(category: string): string {
     const normalized = (category || '').toLowerCase();
-    if (normalized.includes('cooperative')) return '/Images/Cooperative-news.jpg';
+    if (normalized.includes('cooperative')) return '/Images/cooperative-news.jpg';
     if (normalized.includes('innovation') || normalized.includes('farming')) {
-      return '/Images/Farming-Innovation.jpg';
+      return '/Images/farming-innovation.jpg';
     }
     if (normalized.includes('policy') || normalized.includes('trade')) {
-      return '/Images/Trade-Policies.jpg';
+      return '/Images/trade-policies.jpg';
     }
-    return '/Images/Market-Report.jpg';
+    return '/Images/market-report.jpg';
   }
 
   getImageUrl(imagePath: string | null | undefined, fallbackCategory: string): string;

@@ -37,7 +37,7 @@ export class PurchaseCoffee {
       tastingNotes: 'Blackcurrant, Hibiscus, Cane Sugar',
       description: 'Volcanic red loam lots from Mount Kenya’s southern slopes with intense berry brightness.',
       basePrice500g: 1650,
-      image: encodeURI('/Images/Kirinyaga.jpg'),
+      image: '/Images/kirinyaga.jpg',
       badge: 'Best Seller'
     },
     {
@@ -47,7 +47,7 @@ export class PurchaseCoffee {
       tastingNotes: 'Grapefruit, Red Currant, Dark Cocoa',
       description: 'Washed SL28 and SL34 varietals prized for complex wine-like acidity and syrupy body.',
       basePrice500g: 1700,
-      image: encodeURI('/Images/Nyeri.jpg'),
+      image: '/Images/nyeri.jpg',
       badge: 'Estate Lot'
     },
     {
@@ -57,7 +57,7 @@ export class PurchaseCoffee {
       tastingNotes: 'Caramel, Mandarin, Toasted Almond',
       description: 'Sweet, balanced smallholder lots processed with crystal-clear Aberdare mountain water.',
       basePrice500g: 1550,
-      image: encodeURI('/Images/Muranga.jpg'),
+      image: '/Images/muranga.jpg',
       badge: 'Cooperative Direct'
     },
     {
@@ -67,7 +67,7 @@ export class PurchaseCoffee {
       tastingNotes: 'Milk Chocolate, Roasted Hazelnut, Plum',
       description: 'Classic Central Kenya estate coffee delivering rich body and smooth everyday balance.',
       basePrice500g: 1500,
-      image: encodeURI('/Images/Kiambu.jpg'),
+      image: '/Images/kiambu.jpg',
       badge: 'Local Favorite'
     },
     {
@@ -77,7 +77,7 @@ export class PurchaseCoffee {
       tastingNotes: 'Bergamot, Honey, Stone Fruit',
       description: 'High-altitude western highland beans slow-matured for aromatic clarity and floral sweetness.',
       basePrice500g: 1600,
-      image: encodeURI('/Images/Kericho.jpg'),
+      image: '/Images/kericho.jpg',
       badge: 'High Altitude'
     },
     {
@@ -87,7 +87,7 @@ export class PurchaseCoffee {
       tastingNotes: 'Apricot, Brown Sugar, Clove',
       description: 'Rich volcanic forest soil harvest offering warm spice undertones and clean sweetness.',
       basePrice500g: 1600,
-      image: encodeURI('/Images/Nandi.jpg'),
+      image: '/Images/nandi.jpg',
       badge: 'Limited Harvest'
     },
     {
@@ -97,7 +97,7 @@ export class PurchaseCoffee {
       tastingNotes: 'Dark Chocolate, Dried Fig, Molasses',
       description: 'Sun-kissed eastern hills coffee ideal for bold espresso shots and full-bodied filter brews.',
       basePrice500g: 1450,
-      image: encodeURI('/Images/Market-Report.jpg'),
+      image: '/Images/machakos.jpg',
       badge: 'Rich Body'
     }
   ];
