@@ -1,39 +1,53 @@
-<header class=" left-0 right-0 z-[60] h-[40px] bg-[#4B3621] text-white overflow-hidden flex items-center">
-  <div class="flex-shrink-0 bg-[#2E7D32] px-4 py-1 z-10 flex items-center gap-2 mr-0 self-stretch">
-    <span class="font-semibold text-xs tracking-widest uppercase">NCE LIVE</span>
-    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-  </div>
+@if (tickerService.ticker(); as data) {
+  <div class="bg-[#2C1E12] text-white border-b border-white/10 overflow-hidden select-none">
+    <div class="max-w-full flex items-center h-9 sm:h-10">
 
-  <div class="overflow-hidden flex-1">
-    <div class="ticker-track">
-      @for (item of items; track $index) {
-        <span class="inline-flex items-center gap-2 flex-shrink-0 px-5">
-          <span class="text-white/50 text-xs">KENYA</span>
-          <span class="font-semibold text-sm">{{ item.grade }}</span>
-          <span class="text-white/90 text-sm">{{ item.price | number:'1.2-2' }}</span>
-          <span class="text-white/40 text-xs">{{ item.unit }}</span>
+      <!-- Left Fixed Badge: SALE # -->
+      <div class="shrink-0 h-full px-3.5 sm:px-4 bg-[#2E7D32] flex items-center gap-2 font-bold text-xs sm:text-sm tracking-wider uppercase z-10 shadow-md">
+        <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+        <span>SALE {{ data.latestSaleNumber }}</span>
+      </div>
 
-          @if (item.change > 0) {
-            <span class="inline-flex items-center gap-0.5 text-green-400 text-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
-              +{{ item.change | number:'1.2-2' }}
-            </span>
-          } @else if (item.change < 0) {
-            <span class="inline-flex items-center gap-0.5 text-red-400 text-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline><polyline points="16 17 22 17 22 11"></polyline></svg>
-              {{ item.change | number:'1.2-2' }}
-            </span>
-          } @else {
-            <span class="inline-flex items-center gap-0.5 text-white/40 text-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              0.00
-            </span>
+      <!-- Scrolling Grade Prices Marquee -->
+      <div class="flex-1 overflow-hidden relative">
+        <div class="nce-marquee-track flex items-center gap-8 sm:gap-10 whitespace-nowrap pl-4">
+          @for (loop of [1, 2]; track loop) {
+            <div class="flex items-center gap-8 sm:gap-10 shrink-0">
+              @for (item of data.grades; track item.grade) {
+                <div class="inline-flex items-center gap-2 text-xs sm:text-sm">
+                  <span class="text-white/60 font-medium">KENYA</span>
+                  <span class="font-bold text-white">{{ item.grade }}</span>
+                  <span class="font-mono font-semibold text-[#FDFCF5]">
+                    {{ item.price | number:'1.2-2' }}
+                  </span>
+                  <span class="text-[11px] text-white/55">USD/50kg</span>
+
+                  @if (item.change > 0) {
+                    <span class="text-emerald-400 font-semibold text-xs">
+                      &#8599; +{{ item.change | number:'1.2-2' }}
+                    </span>
+                  } @else if (item.change < 0) {
+                    <span class="text-rose-400 font-semibold text-xs">
+                      &#8600; {{ item.change | number:'1.2-2' }}
+                    </span>
+                  } @else {
+                    <span class="text-white/50 font-medium text-xs">&mdash; 0.00</span>
+                  }
+
+                  @if (item.lastSaleNumber < data.latestSaleNumber) {
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/75">
+                      Sale {{ item.lastSaleNumber }}
+                    </span>
+                  }
+
+                  <span class="text-white/20 pl-3">|</span>
+                </div>
+              }
+            </div>
           }
-          <span class="text-white/20 ml-1">|</span>
-        </span>
-      }
+        </div>
+      </div>
+
     </div>
   </div>
-
-  <div class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#4B3621] to-transparent pointer-events-none z-10"></div>
-</header>
+}

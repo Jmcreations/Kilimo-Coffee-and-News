@@ -3,7 +3,7 @@ import { Hero } from "../hero/hero";
 import { NewsPreview } from "../news-preview/news-preview";
 import { TrustSection } from '../trust-section/trust-section';
 import { NetworkSectionComponent } from "../network-section/network-section";
-import { CoffeeGradesComponent } from "../coffee-grades/coffee-grades";
+import { CoffeeGrades } from "../coffee-grades/coffee-grades";
 import { DataTeaser } from "../data-teaser/data-teaser";
 import { InquiryPage } from "../inquiry-page/inquiry-page";
 
@@ -14,7 +14,7 @@ import { InquiryPage } from "../inquiry-page/inquiry-page";
     NewsPreview,
     TrustSection,
     NetworkSectionComponent,
-    CoffeeGradesComponent,
+    CoffeeGrades,
     DataTeaser,
     InquiryPage
 ],

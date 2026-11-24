@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { AuthService, StaffUser, UserRole } from '../../services/auth.service';
 import { StaffNav } from '../staff-nav/staff-nav';
+import { TickerService } from '../../services/ticker';
 
 interface NewsRecord {
   _id: string;
@@ -25,6 +26,7 @@ interface NewsRecord {
 export class AdminDashboard implements OnInit {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
+  tickerService = inject(TickerService);
 
   activeTab = signal<'users' | 'news'>('users');
   feedbackMsg = signal<string>('');
@@ -52,9 +54,51 @@ export class AdminDashboard implements OnInit {
     content: ''
   };
 
+  saleNumberInput = signal<number>(9);
+  saleDateInput = signal<string>('');
+  gradePriceInputs: Record<string, number | null> = {
+    AA: null,
+    AB: null,
+    PB: null,
+    C: null,
+    E: null,
+    TT: null
+  };
+  savingSale = signal<boolean>(false);
+  saleMessage = signal<string>('');
+  saleError = signal<string>('');
+
   ngOnInit(): void {
     this.loadUsers();
     this.loadArticles();
+  }
+
+  submitNceSaleUpdate(): void {
+    this.saleMessage.set('');
+    this.saleError.set('');
+    this.savingSale.set(true);
+
+    this.tickerService
+      .updateSale({
+        saleNumber: this.saleNumberInput(),
+        saleDate: this.saleDateInput(),
+        prices: this.gradePriceInputs
+      })
+      .subscribe({
+        next: (updated) => {
+          this.tickerService.ticker.set(updated);
+          this.savingSale.set(false);
+          this.saleMessage.set(
+            `Ticker updated to Sale ${updated.latestSaleNumber}. Untraded grades carried over automatically.`
+          );
+          this.saleNumberInput.set(updated.latestSaleNumber + 1);
+          this.gradePriceInputs = { AA: null, AB: null, PB: null, C: null, E: null, TT: null };
+        },
+        error: (err) => {
+          this.savingSale.set(false);
+          this.saleError.set(err.error?.message || 'Could not update NCE sale ticker.');
+        }
+      });
   }
 
   private clearAlerts(): void {

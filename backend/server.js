@@ -13,6 +13,7 @@ const tickerRoutes = require('./routes/ticker');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const { startNceTuesdayCron } = require('./jobs/nceSync');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -64,3 +65,12 @@ mongoose.connect(process.env.MONGO_URI)
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('Connected to MongoDB Atlas');
+    startNceTuesdayCron();
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch((err) => console.error('MongoDB connection error:', err));

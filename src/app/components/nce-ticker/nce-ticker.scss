@@ -1,14 +1,17 @@
-@keyframes ticker-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.ticker-track {
-  display: inline-flex;
-  animation: ticker-scroll 50s linear infinite;
-  white-space: nowrap;
+.nce-marquee-track {
+  width: max-content;
+  animation: nceScroll 34s linear infinite;
 
   &:hover {
     animation-play-state: paused;
+  }
+}
+
+@keyframes nceScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }

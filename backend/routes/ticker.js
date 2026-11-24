@@ -1,22 +1,28 @@
-const mongoose = require('mongoose');
+const express = require('express');
+const { getOrInitTicker, applySaleUpdate } = require('../services/tickerService');
 
-const gradeEntrySchema = new mongoose.Schema(
-  {
-    grade: { type: String, enum: ['AA', 'AB', 'PB', 'C', 'E', 'TT'], required: true },
-    price: { type: Number, required: true },      // USD per 50kg bag
-    change: { type: Number, default: 0 },         // +/- vs that grade's prior sale price
-    lastSaleNumber: { type: Number, required: true }
-  },
-  { _id: false }
-);
+const router = express.Router();
 
-const tickerSchema = new mongoose.Schema(
-  {
-    latestSaleNumber: { type: Number, required: true, default: 1 },
-    lastSaleDate: { type: String, default: '' },
-    grades: { type: [gradeEntrySchema], required: true }
-  },
-  { timestamps: true }
-);
+router.get('/', async (_req, res) => {
+  try {
+    const ticker = await getOrInitTicker();
+    res.status(200).json(ticker);
+  } catch (error) {
+    console.error('Error loading ticker:', error);
+    res.status(500).json({ message: 'Could not load the NCE ticker.' });
+  }
+});
 
-module.exports = mongoose.model('Ticker', tickerSchema);
+router.put('/', async (req, res) => {
+  try {
+    const ticker = await applySaleUpdate(req.body);
+    res.status(200).json(ticker);
+  } catch (error) {
+    const status = error.message.includes('required') || error.message.includes('Enter at least')
+      ? 400
+      : 500;
+    res.status(status).json({ message: error.message });
+  }
+});
+
+module.exports = router;

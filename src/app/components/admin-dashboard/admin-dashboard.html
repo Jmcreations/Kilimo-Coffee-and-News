@@ -11,6 +11,93 @@
         </p>
       </div>
 
+      <!-- NCE SALE TICKER MANAGER -->
+      <div class="bg-white rounded-2xl border border-[#4B3621]/15 shadow-xs p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5 pb-4 border-b border-[#4B3621]/10">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#2E7D32]">
+              Active: SALE {{ tickerService.ticker().latestSaleNumber }}
+            </span>
+            <h2 class="font-serif text-xl sm:text-2xl text-[#4B3621]">
+              Update Nairobi Coffee Exchange (NCE) Sale Ticker
+            </h2>
+            <p class="text-xs sm:text-sm text-[#333333]/75 mt-0.5">
+              Enter prices (USD / 50kg bag) only for grades traded in this auction. Leave untraded grades blank to carry over their previous price.
+            </p>
+          </div>
+        </div>
+
+        @if (saleMessage()) {
+          <div class="mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm">
+            {{ saleMessage() }}
+          </div>
+        }
+
+        @if (saleError()) {
+          <div class="mb-4 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm">
+            {{ saleError() }}
+          </div>
+        }
+
+        <form (ngSubmit)="submitNceSaleUpdate()" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-[#4B3621] mb-1">Sale Number *</label>
+              <input
+                type="number"
+                min="1"
+                name="saleNumber"
+                [ngModel]="saleNumberInput()"
+                (ngModelChange)="saleNumberInput.set($event)"
+                required
+                class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 text-sm"
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-[#4B3621] mb-1">Auction Date (Optional)</label>
+              <input
+                type="text"
+                name="saleDate"
+                [ngModel]="saleDateInput()"
+                (ngModelChange)="saleDateInput.set($event)"
+                placeholder="e.g. Nov 24, 2026"
+                class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 text-sm"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            @for (g of tickerService.ticker().grades; track g.grade) {
+              <div class="p-3 rounded-xl bg-[#FDFCF5] border border-[#4B3621]/15">
+                <div class="flex items-center justify-between text-xs font-bold text-[#4B3621] mb-1">
+                  <span>Grade {{ g.grade }}</span>
+                  <span class="text-[10px] font-normal text-[#333333]/65">S{{ g.lastSaleNumber }}</span>
+                </div>
+                <input
+                  type="number"
+                  step="0.01"
+                  [name]="'grade_' + g.grade"
+                  [(ngModel)]="gradePriceInputs[g.grade]"
+                  [placeholder]="g.price.toFixed(2)"
+                  class="w-full px-2.5 py-1.5 rounded-lg border border-[#4B3621]/20 bg-white text-sm font-mono"
+                />
+                <div class="text-[11px] text-[#333333]/60 mt-1">
+                  Current: ${{ g.price | number:'1.2-2' }}
+                </div>
+              </div>
+            }
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="savingSale()"
+            class="btn-feedback px-6 py-3 rounded-xl bg-[#2E7D32] hover:bg-[#256628] disabled:opacity-60 text-white font-semibold text-sm">
+            {{ savingSale() ? 'Updating Ticker...' : 'Publish Sale ' + saleNumberInput() + ' to Ticker' }}
+          </button>
+        </form>
+      </div>
+
       <!-- Tab Switcher -->
       <div class="inline-flex rounded-xl bg-white p-1 border border-[#4B3621]/15 self-start">
         <button
