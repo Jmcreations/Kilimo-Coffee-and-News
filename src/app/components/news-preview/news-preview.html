@@ -61,6 +61,7 @@
             <div class="relative h-52 overflow-hidden bg-[#4B3621]/5">
               <img
                 [src]="newsService.getImageUrl(article.contentImage, article.category)"
+                (error)="$any($event.target).src = newsService.getCategoryCover(article.category)"
                 [alt]="article.title"
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
