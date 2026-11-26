@@ -7,7 +7,7 @@ import { NavigationHistoryService } from './services/navigation-history';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Header, NceTicker],
+  imports: [RouterOutlet, NceTicker],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
