@@ -1,79 +1,117 @@
-<section class="relative z-20 min-h-[78vh] flex items-center justify-center bg-[#2C1E12] text-white">
-  <!-- Background Image Wrapper (overflow-hidden stays ONLY here) -->
-  <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <img
-      src="/Images/farming-innovation.jpg"
-      alt="Kenyan coffee highlands"
-      class="w-full h-full object-cover object-center opacity-55"
-    />
-    <div class="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/70"></div>
-  </div>
+<section class="relative min-h-[88vh] bg-[#1A110A] text-white overflow-hidden flex flex-col justify-between">
+  <!-- Background Image + Moody Espresso Radial Spotlight -->
+  <img
+    src="/Images/export.jpg"
+    alt="Farm-Direct Kenyan Coffee"
+    class="absolute inset-0 w-full h-full object-cover object-center opacity-50 scale-105"
+  />
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(75,54,33,0.35)_0%,rgba(26,17,10,0.88)_72%,#140C07_100%)]"></div>
 
-  <!-- Responsive Content Container -->
-  <div class="relative z-10 max-w-5xl mx-auto py-16 sm:py-24 px-4 sm:px-6 text-center">
-    <h1 class="font-serif text-3xl sm:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight mb-6">
-      One-stop access to coffee information and buying opportunities across every region in Kenya.
-    </h1>
+  <!-- TOP FLOATING GLASS NAVIGATION -->
+  <header class="relative z-20 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex items-center justify-between gap-4">
+    <!-- Brand -->
+    <a routerLink="/" class="inline-flex items-center gap-3">
+      <img src="/logo.jpeg" alt="Kilimo Coffee" class="w-9 h-9 rounded-xl object-cover border border-white/20 shadow-md" />
+      <span class="font-serif text-xl sm:text-2xl font-semibold tracking-tight text-white">
+        Kilimo Coffee
+      </span>
+    </a>
 
-    <p class="max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-white/90 leading-relaxed mb-10">
-      Buy premium Kenyan coffee directly from licensed dealers, estates, and producers. Access live market data, expert insights, and industry news all in one place.
-    </p>
+    <!-- Center Translucent Pill Menu -->
+    <nav class="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-xs sm:text-sm font-medium">
+      <a routerLink="/" class="px-4 py-2 rounded-xl bg-white/15 text-white">Home</a>
+      <a routerLink="/purchase-coffee" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Shop</a>
+      <a href="/#grades" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Grades</a>
+      <a routerLink="/all-news" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">News</a>
+      <a routerLink="/inquiry" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Contact</a>
+    </nav>
 
-    <!-- Buttons: Stacked on mobile, side-by-side from sm (640px) up -->
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 w-full max-w-2xl mx-auto">
+    <!-- Right Account & Cart Icon Buttons -->
+    <div class="flex items-center gap-2.5">
       <a
-        href="#news"
-        class="btn-feedback inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-[#2E7D32] hover:bg-[#256628] text-white font-medium text-sm sm:text-base">
-        Latest Coffee News
+        [routerLink]="auth.isLoggedIn() ? (auth.currentUser()?.role === 'admin' ? '/admin' : auth.currentUser()?.role === 'journalist' ? '/post-news' : '/purchase-coffee') : '/login'"
+        class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 flex items-center justify-center text-white transition-colors"
+        aria-label="Account">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
       </a>
 
       <a
-        href="#market"
-        class="btn-feedback inline-flex items-center justify-center px-6 py-3.5 rounded-lg bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white font-medium text-sm sm:text-base">
-        Market Intelligence
-      </a>
-
-      <!-- Purchase Coffee Dropdown Wrapper -->
-      <div class="relative">
-        <button
-          type="button"
-          (click)="togglePurchaseDropdown($event)"
-          class="btn-feedback w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-[#4B3621] hover:bg-[#3A2919] text-white font-medium text-sm sm:text-base">
-          <span>Purchase Coffee</span>
-          <svg
-            class="w-4 h-4 transition-transform duration-200"
-            [class.rotate-180]="purchaseDropdownOpen"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-
-        @if (purchaseDropdownOpen) {
-          <div class="relative sm:absolute sm:right-0 sm:w-72 mt-2 bg-white text-[#333333] rounded-xl shadow-2xl border border-[#4B3621]/15 overflow-hidden text-left z-30">
-            <a
-              routerLink="/purchase-coffee"
-              (click)="closePurchaseDropdown()"
-              class="block px-4 py-3.5 hover:bg-[#FDFCF5] border-b border-[#4B3621]/10 transition-colors">
-              <div class="font-semibold text-sm text-[#4B3621]">Local Export</div>
-              <div class="text-xs text-[#333333]/70 mt-0.5">
-                Roasted beans &amp; ground coffee delivered across Kenya
-              </div>
-            </a>
-
-            <a
-              href="#contact"
-              (click)="closePurchaseDropdown()"
-              class="block px-4 py-3.5 hover:bg-[#FDFCF5] transition-colors">
-              <div class="font-semibold text-sm text-[#4B3621]">International Export</div>
-              <div class="text-xs text-[#333333]/70 mt-0.5">
-                Bulk green lots (AA, AB, PB) &amp; global trade inquiries
-              </div>
-            </a>
-          </div>
+        routerLink="/purchase-coffee"
+        class="relative w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 flex items-center justify-center text-white transition-colors"
+        aria-label="Coffee Cart">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        @if (cart.totalItems() > 0) {
+          <span class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#2E7D32] text-white text-[10px] font-bold flex items-center justify-center">
+            {{ cart.totalItems() }}
+          </span>
         }
+      </a>
+    </div>
+  </header>
+
+  <!-- CENTER EDITORIAL SPLIT CONTENT -->
+  <div class="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 grid grid-cols-1 lg:grid-cols-12 items-center gap-8">
+    <!-- Left Headline + Emerald Pill CTA -->
+    <div class="lg:col-span-6 space-y-6">
+      <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold leading-[1.08] tracking-tight text-white">
+        Farm-Direct<br />Kenyan Coffee
+      </h1>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <a
+          routerLink="/purchase-coffee"
+          class="inline-flex items-center gap-3 pl-5 pr-2 py-2 rounded-full bg-[#2E7D32] hover:bg-[#256628] text-white font-semibold text-sm transition-all shadow-lg">
+          <span>Open shop</span>
+          <span class="w-7 h-7 rounded-full bg-white text-[#1A110A] flex items-center justify-center text-xs font-bold">
+            &#8599;
+          </span>
+        </a>
+
+        <a
+          routerLink="/all-news"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-sm font-medium transition-colors">
+          <span>Read Market News</span>
+        </a>
       </div>
     </div>
+
+    <!-- Right Sub-copy Block -->
+    <div class="lg:col-span-4 lg:col-start-9">
+      <p class="text-sm sm:text-base text-white/80 leading-relaxed">
+        Explore our single-origin regional catalog from Nyeri to Kirinyaga, track weekly Nairobi Coffee Exchange auction rates, and order freshly roasted Kenyan Arabica delivered nationwide.
+      </p>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR: PROMO PILL (LEFT) + CREAM AUCTION CARD (RIGHT) -->
+  <div class="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <!-- Bottom-Left Promo Badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/15 backdrop-blur-md text-xs sm:text-sm text-white/90 self-start">
+      <span class="w-2 h-2 rounded-full bg-[#2E7D32]"></span>
+      <span>Free doorstep delivery on orders over KES 5,000</span>
+    </div>
+
+    <!-- Bottom-Right Floating Cream Card -->
+    <a
+      href="/#grades"
+      class="w-full sm:w-80 p-4 rounded-2xl bg-[#FDFCF5] text-[#4B3621] shadow-2xl border border-[#4B3621]/15 hover:-translate-y-0.5 transition-transform">
+      <div class="flex items-center gap-2.5 mb-1.5">
+        <span class="px-2 py-0.5 rounded-md bg-[#2E7D32] text-white text-[11px] font-bold uppercase tracking-wider">
+          NCE Sale {{ tickerService.ticker().latestSaleNumber }}
+        </span>
+        <span class="text-xs font-bold underline text-[#4B3621]">
+          [View Grade Benchmarks]
+        </span>
+      </div>
+      <p class="text-[11px] sm:text-xs text-[#333333]/80 leading-snug">
+        All regional lots are graded to Kenya Coffee Directorate AA, AB &amp; PB standards with direct cooperative traceability.
+      </p>
+    </a>
   </div>
 </section>

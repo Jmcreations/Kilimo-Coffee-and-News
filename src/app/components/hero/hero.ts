@@ -1,31 +1,18 @@
-import { Component, ElementRef, HostListener, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { CartService } from '../../services/cart-service';
+import { AuthService } from '../../services/auth.service';
+import { TickerService } from '../../services/ticker';
 
 @Component({
   selector: 'app-hero',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './hero.html',
-  styleUrl: './hero.scss'
+  templateUrl: './hero.html'
 })
 export class Hero {
-  private elementRef = inject(ElementRef);
-  purchaseDropdownOpen = false;
-
-  togglePurchaseDropdown(event: Event): void {
-    event.stopPropagation();
-    this.purchaseDropdownOpen = !this.purchaseDropdownOpen;
-  }
-
-  closePurchaseDropdown(): void {
-    this.purchaseDropdownOpen = false;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
-      this.purchaseDropdownOpen = false;
-    }
-  }
+  cart = inject(CartService);
+  auth = inject(AuthService);
+  tickerService = inject(TickerService);
 }
