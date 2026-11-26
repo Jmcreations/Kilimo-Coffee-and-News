@@ -1,7 +1,7 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/AnCoffee/browser",
-  "framework": "angular",
+  "outputDirectory": "dist/an-coffee/browser",
+  "framework": null,
   "rewrites": [
     {
       "source": "/(.*)",

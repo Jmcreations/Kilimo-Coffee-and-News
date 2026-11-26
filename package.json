@@ -6,9 +6,10 @@
     "start": "node dist/AnCoffee/server/server.mjs",
     "start:dev": "ng serve --proxy-config proxy.conf.json",
     "dev": "node scripts/dev.js",
-    "build": "ng build",
-    "optimize:images": "node scripts/optimize-images.js",
+    "build": "ng build && cp -n dist/an-coffee/browser/index.csr.html dist/an-coffee/browser/index.html || true",
+    "build:dev": "ng build --configuration development",
     "watch": "ng build --watch --configuration development",
+    "optimize:images": "node scripts/optimize-images.js",
     "test": "ng test",
     "serve:ssr:AnCoffee": "node dist/AnCoffee/server/server.mjs"
   },
