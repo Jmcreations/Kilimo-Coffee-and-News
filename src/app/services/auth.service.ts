@@ -5,11 +5,21 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export type UserRole = 'client' | 'journalist' | 'delivery' | 'admin';
+
 export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  role: 'client' | 'journalist' | 'admin';
+  role: UserRole;
+}
+
+export interface StaffUser {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  role: Exclude<UserRole, 'client'>;
 }
 
 interface AuthResponse {
@@ -23,7 +33,7 @@ export class AuthService {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
 
-  private getApiBase(): string {
+  getApiBase(): string {
     const raw = environment.apiUrl.trim().replace(/\/+$/, '');
     return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
   }
@@ -48,6 +58,25 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.getToken() && !!this.currentUser();
+  }
+
+  hasRole(...roles: UserRole[]): boolean {
+    const role = this.currentUser()?.role;
+    return role !== undefined && roles.includes(role);
+  }
+
+  redirectByRole(): void {
+    const role = this.currentUser()?.role;
+    const route =
+      role === 'admin'
+        ? '/admin'
+        : role === 'delivery'
+          ? '/delivery-orders'
+          : role === 'journalist'
+            ? '/post-news'
+            : '/';
+
+    this.router.navigate([route]);
   }
 
   login(email: string, password: string) {
