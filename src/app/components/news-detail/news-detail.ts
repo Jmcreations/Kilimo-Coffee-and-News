@@ -2,11 +2,12 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NewsArticle, NewsService } from '../../services/news.service';
+import { HomeBrandBar } from '../home-brand-bar/home-brand-bar';
 
 @Component({
   selector: 'app-news-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, HomeBrandBar],
   templateUrl: './news-detail.html',
   styleUrl: './news-detail.scss'
 })

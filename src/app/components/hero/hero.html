@@ -1,4 +1,4 @@
-<section class="relative min-h-[88vh] bg-[#1A110A] text-white overflow-hidden flex flex-col justify-between">
+<section class="relative min-h-screen w-full bg-[#1A110A] text-white overflow-hidden flex flex-col justify-between">
   <!-- Background Image + Moody Espresso Radial Spotlight -->
   <img
     src="/Images/export.jpg"
@@ -23,7 +23,7 @@
       <a routerLink="/purchase-coffee" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Shop</a>
       <a href="/#grades" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Grades</a>
       <a routerLink="/all-news" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">News</a>
-      <a routerLink="/#inquiry" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Contact</a>
+      <a href="#inquiry" (click)="scrollToInquiry($event)" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors"> Contact </a>
     </nav>
 
     <!-- Right Account & Cart Icon Buttons -->

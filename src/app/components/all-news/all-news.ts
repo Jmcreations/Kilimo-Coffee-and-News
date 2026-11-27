@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { NewsArticle, NewsService } from '../../services/news.service';
+import { HomeBrandBar } from '../home-brand-bar/home-brand-bar';
 
 @Component({
   selector: 'app-all-news',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, HomeBrandBar],
   templateUrl: './all-news.html',
   styleUrl: './all-news.scss'
 })

@@ -8,6 +8,7 @@ import {
   PackSize,
   RoastLevel
 } from '../../services/cart-service';
+import { HomeBrandBar } from '../home-brand-bar/home-brand-bar';
 
 interface RegionalCoffeeProduct {
   region: CoffeeRegion;
@@ -23,7 +24,7 @@ interface RegionalCoffeeProduct {
 @Component({
   selector: 'app-purchase-coffee',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HomeBrandBar],
   templateUrl: './purchase-coffee.html'
 })
 export class PurchaseCoffee {

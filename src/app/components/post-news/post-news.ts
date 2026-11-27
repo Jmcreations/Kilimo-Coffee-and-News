@@ -153,10 +153,8 @@ export class PostNews implements OnInit {
     }
 
     this.submitting.set(true);
-    this.uploadProgress.set(5);
-    this.uploadStatusText.set(
-      this.selectedFile ? 'Uploading photo & article... 5%' : 'Publishing article... 5%'
-    );
+    this.uploadProgress.set(0);
+    this.uploadStatusText.set('Starting upload...');
 
     const editId = this.editingArticleId();
     const request$ = editId
@@ -167,41 +165,44 @@ export class PostNews implements OnInit {
       next: (event) => {
         if (event.type === HttpEventType.UploadProgress) {
           const total = event.total || 1;
-          const pct = Math.min(99, Math.round((event.loaded / total) * 100));
-          this.uploadProgress.set(pct);
-          this.uploadStatusText.set(
-            this.selectedFile
-              ? `Uploading photo & article... ${pct}%`
-              : `Sending article... ${pct}%`
-          );
+          const percent = Math.min(99, Math.round((100 * event.loaded) / total));
+          this.uploadProgress.set(percent);
+
+          const loadedMb = (event.loaded / (1024 * 1024)).toFixed(2);
+          const totalMb = (total / (1024 * 1024)).toFixed(2);
+
+          if (event.loaded >= total) {
+            this.uploadStatusText.set('Optimizing image & saving article to cloud...');
+          } else {
+            this.uploadStatusText.set(`Uploading (${loadedMb} MB / ${totalMb} MB) — ${percent}%`);
+          }
         } else if (event.type === HttpEventType.Response) {
           this.uploadProgress.set(100);
-          this.uploadStatusText.set('Completed! 100%');
+          this.uploadStatusText.set('Published!');
           this.submitting.set(false);
-
-          const saved = event.body;
-          if (editId && saved) {
-            this.allArticles.update((list) =>
-              list.map((a) => ((a._id || a.id) === editId ? saved : a))
-            );
-            this.successMessage.set('Your article updates have been saved.');
-          } else if (saved) {
-            this.allArticles.update((list) => [saved, ...list]);
-            this.successMessage.set(
-              `Published! Credited to ${saved.author}.`
-            );
+          const savedArticle = event.body as NewsArticle | null;
+          if (savedArticle) {
+            if (editId) {
+              this.allArticles.update((articles) =>
+                articles.map((article) =>
+                  (article._id || article.id) === editId ? savedArticle : article
+                )
+              );
+              this.successMessage.set('Your article updates have been saved.');
+            } else {
+              this.allArticles.update((articles) => [savedArticle, ...articles]);
+              this.successMessage.set(`Published! Credited to ${savedArticle.author}.`);
+            }
           }
-
           this.cancelEdit();
+          this.loadMyArticles();
         }
       },
       error: (err) => {
         this.submitting.set(false);
         this.uploadProgress.set(0);
         this.uploadStatusText.set('');
-        this.errorMessage.set(
-          err.error?.message || 'Failed to save article. Please check your connection and try again.'
-        );
+        this.errorMessage.set(err.error?.message || 'Failed to publish article.');
       }
     });
   }

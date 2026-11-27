@@ -46,15 +46,15 @@ export class NewsService {
     return this.getNewsById(id);
   }
 
-  createNewsWithProgress(formData: FormData): Observable<HttpEvent<NewsArticle>> {
-    return this.http.post<NewsArticle>(this.apiUrl, formData, {
+  createNewsWithProgress(formData: FormData): Observable<HttpEvent<any>> {
+    return this.http.post<any>(this.apiUrl, formData, {
       reportProgress: true,
       observe: 'events'
     });
   }
 
-  updateNewsWithProgress(id: string, formData: FormData): Observable<HttpEvent<NewsArticle>> {
-    return this.http.put<NewsArticle>(`${this.apiUrl}/${id}`, formData, {
+  updateNewsWithProgress(id: string, formData: FormData): Observable<HttpEvent<any>> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, formData, {
       reportProgress: true,
       observe: 'events'
     });

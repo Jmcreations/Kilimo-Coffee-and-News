@@ -15,4 +15,11 @@ export class Hero {
   cart = inject(CartService);
   auth = inject(AuthService);
   tickerService = inject(TickerService);
+  scrollToInquiry(event: Event): void {
+    const target = document.getElementById('inquiry');
+    if (target) {
+      event.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
 }
