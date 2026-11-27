@@ -5,26 +5,23 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-export type UserRole = 'client' | 'journalist' | 'delivery' | 'admin';
-
 export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
-}
-
-export interface StaffUser {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  role: Exclude<UserRole, 'client'>;
+  role: 'client' | 'journalist' | 'admin';
 }
 
 interface AuthResponse {
   token: string;
   user: AuthUser;
+}
+
+export interface OAuthPayload {
+  provider: 'google' | 'microsoft' | 'apple';
+  idToken?: string;
+  accessToken?: string;
+  fallbackName?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -33,7 +30,7 @@ export class AuthService {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
 
-  getApiBase(): string {
+  private getApiBase(): string {
     const raw = environment.apiUrl.trim().replace(/\/+$/, '');
     return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
   }
@@ -60,25 +57,6 @@ export class AuthService {
     return !!this.getToken() && !!this.currentUser();
   }
 
-  hasRole(...roles: UserRole[]): boolean {
-    const role = this.currentUser()?.role;
-    return role !== undefined && roles.includes(role);
-  }
-
-  redirectByRole(): void {
-    const role = this.currentUser()?.role;
-    const route =
-      role === 'admin'
-        ? '/admin'
-        : role === 'delivery'
-          ? '/delivery-orders'
-          : role === 'journalist'
-            ? '/post-news'
-            : '/';
-
-    this.router.navigate([route]);
-  }
-
   login(email: string, password: string) {
     return this.http
       .post<AuthResponse>(`${this.authUrl}/login`, { email, password })
@@ -91,9 +69,9 @@ export class AuthService {
       .pipe(tap((res) => this.handleAuthSuccess(res)));
   }
 
-  oauthLogin(provider: 'google' | 'microsoft' | 'apple', email: string, name: string) {
+  oauthLogin(payload: OAuthPayload) {
     return this.http
-      .post<AuthResponse>(`${this.authUrl}/oauth`, { provider, email, name })
+      .post<AuthResponse>(`${this.authUrl}/oauth`, payload)
       .pipe(tap((res) => this.handleAuthSuccess(res)));
   }
 
@@ -104,7 +82,6 @@ export class AuthService {
     }
     this.currentUser.set(res.user);
 
-    // Silent role routing: staff go to their workspace; clients go to the coffee store
     if (res.user.role === 'admin') {
       this.router.navigate(['/admin']);
     } else if (res.user.role === 'journalist') {

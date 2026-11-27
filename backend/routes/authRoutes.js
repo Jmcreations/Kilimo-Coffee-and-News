@@ -1,9 +1,21 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
+const jwksClient = require('jwks-rsa');
 const User = require('../models/User');
 
 const router = express.Router();
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const appleJwks = jwksClient({ jwksUri: 'https://appleid.apple.com/auth/keys' });
+
+function getAppleSigningKey(header, callback) {
+  appleJwks.getSigningKey(header.kid, (err, key) => {
+    if (err) return callback(err);
+    callback(null, key.getPublicKey());
+  });
+}
 
 function signUserToken(user) {
   return jwt.sign(
@@ -50,7 +62,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /api/auth/login (Unified login for clients & staff)
+// POST /api/auth/login (Unified email/password login for clients & staff)
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -76,21 +88,56 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST /api/auth/oauth (Google, Microsoft, or Apple sign-in)
+// POST /api/auth/oauth (Google, Microsoft, and Apple token verification)
 router.post('/oauth', async (req, res) => {
   try {
-    const { provider, email, name } = req.body;
-    if (!email || !['google', 'microsoft', 'apple'].includes(provider)) {
-      return res.status(400).json({ message: 'Invalid social sign-in payload.' });
+    const { provider, idToken, accessToken, fallbackName } = req.body;
+    let verifiedEmail = '';
+    let verifiedName = fallbackName || '';
+
+    if (provider === 'google') {
+      const ticket = await googleClient.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID
+      });
+      const payload = ticket.getPayload();
+      verifiedEmail = payload.email;
+      verifiedName = payload.name || verifiedName;
+    } else if (provider === 'microsoft') {
+      const graphRes = await fetch('https://graph.microsoft.com/v1.0/me', {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      if (!graphRes.ok) {
+        return res.status(401).json({ message: 'Invalid Microsoft token.' });
+      }
+      const profile = await graphRes.json();
+      verifiedEmail = profile.mail || profile.userPrincipalName;
+      verifiedName = profile.displayName || verifiedName;
+    } else if (provider === 'apple') {
+      const decoded = await new Promise((resolve, reject) => {
+        jwt.verify(
+          idToken,
+          getAppleSigningKey,
+          { audience: process.env.APPLE_CLIENT_ID, issuer: 'https://appleid.apple.com' },
+          (err, payload) => (err ? reject(err) : resolve(payload))
+        );
+      });
+      verifiedEmail = decoded.email;
+    } else {
+      return res.status(400).json({ message: 'Unsupported OAuth provider.' });
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
+    if (!verifiedEmail) {
+      return res.status(400).json({ message: 'No verified email returned by provider.' });
+    }
+
+    const normalizedEmail = verifiedEmail.trim().toLowerCase();
     let user = await User.findOne({ email: normalizedEmail });
 
-    // If user already exists (including pre-created staff accounts), preserve their role
+    // Preserve pre-registered staff roles ('admin' or 'journalist'); default new accounts to 'client'
     if (!user) {
       user = await User.create({
-        name: (name || normalizedEmail.split('@')[0]).trim(),
+        name: (verifiedName || normalizedEmail.split('@')[0]).trim(),
         email: normalizedEmail,
         authProvider: provider,
         role: 'client'
@@ -103,7 +150,7 @@ router.post('/oauth', async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
   } catch (err) {
-    res.status(500).json({ message: 'Social authentication failed', error: err.message });
+    res.status(401).json({ message: 'Social authentication verification failed', error: err.message });
   }
 });
 

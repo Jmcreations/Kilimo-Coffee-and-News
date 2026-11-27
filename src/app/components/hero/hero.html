@@ -21,9 +21,9 @@
     <nav class="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-xs sm:text-sm font-medium">
       <a routerLink="/" class="px-4 py-2 rounded-xl bg-white/15 text-white">Home</a>
       <a routerLink="/purchase-coffee" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Shop</a>
-      <a href="/#grades" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Grades</a>
+      <a href="#grades" (click)="scrollToSection('grades', $event)" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Grades</a>
       <a routerLink="/all-news" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">News</a>
-      <a href="#inquiry" (click)="scrollToInquiry($event)" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors"> Contact </a>
+      <a href="#inquiry" (click)="scrollToSection('inquiry', $event)" class="px-4 py-2 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-colors">Contact</a>
     </nav>
 
     <!-- Right Account & Cart Icon Buttons -->
@@ -85,17 +85,20 @@
     <div class="lg:col-span-4 lg:col-start-9">
       <p class="text-sm sm:text-base text-white/80 leading-relaxed">
         One stop shop for news coverage, market insights, and coffee from all over Kenya.
+      </p>
     </div>
   </div>
 
-  <!-- BOTTOM BAR: PROMO PILL (LEFT) + CREAM AUCTION CARD (RIGHT) -->
+  <!-- BOTTOM BAR: GRADE BENCHMARKS (LEFT) + MARKET INTELLIGENCE CARD (RIGHT) -->
   <div class="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <!-- Bottom-Left Card: NCE Sale & Grade Benchmarks -->
     <a
-      href="/#grades"
+      href="#grades"
+      (click)="scrollToSection('grades', $event)"
       class="w-full sm:w-80 p-4 rounded-2xl bg-[#FDFCF5] text-[#4B3621] shadow-2xl border border-[#4B3621]/15 hover:-translate-y-0.5 transition-transform">
       <div class="flex items-center gap-2.5 mb-1.5">
         <span class="px-2 py-0.5 rounded-md bg-[#2E7D32] text-white text-[11px] font-bold uppercase tracking-wider">
-          NCE Sale {{ tickerService.ticker().latestSaleNumber }}
+          NCE SALE {{ tickerService.ticker().latestSaleNumber }}
         </span>
         <span class="text-xs font-bold underline text-[#4B3621]">
           [View Grade Benchmarks]
@@ -103,6 +106,24 @@
       </div>
       <p class="text-[11px] sm:text-xs text-[#333333]/80 leading-snug">
         All regional lots are graded to Kenya Coffee Directorate AA, AB &amp; PB standards with direct cooperative traceability.
+      </p>
+    </a>
+
+    <!-- Bottom-Right Card: Market Intelligence & Detailed Reports -->
+    <a
+      href="#market"
+      (click)="scrollToSection('market', $event)"
+      class="w-full sm:w-80 p-4 rounded-2xl bg-[#241911]/90 backdrop-blur-md text-white shadow-2xl border border-white/15 hover:border-[#66BB6A]/60 hover:-translate-y-0.5 transition-all">
+      <div class="flex items-center gap-2.5 mb-1.5">
+        <span class="px-2 py-0.5 rounded-md bg-[#2E7D32] text-white text-[11px] font-bold uppercase tracking-wider">
+          MARKET DATA
+        </span>
+        <span class="text-xs font-bold underline text-[#66BB6A]">
+          [Detailed Market Reports]
+        </span>
+      </div>
+      <p class="text-[11px] sm:text-xs text-white/80 leading-snug">
+        Explore county production data, historical auction trends, and verified NCE market intelligence.
       </p>
     </a>
   </div>

@@ -1,552 +1,469 @@
 <app-home-brand-bar currentPage="shop" />
-<section class="min-h-screen bg-[#FDFCF5] pb-20">
-  <!-- Store Hero Banner -->
-  <div class="bg-[#4B3621] text-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-      <div class="max-w-2xl">
-        <span class="inline-block text-xs font-semibold uppercase tracking-wider bg-[#2E7D32] text-white px-3 py-1 rounded-full mb-3">
-          Local Kenyan Coffee Store
+
+<section class="min-h-screen bg-[#FDFCF5] text-[#333333] pb-24">
+  <!-- Storefront Banner -->
+  <div class="bg-[#1A110A] text-white border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+      <div class="max-w-2xl space-y-3">
+        <span class="inline-block px-3 py-1 rounded-full bg-[#2E7D32]/25 text-[#66BB6A] text-xs font-semibold uppercase tracking-wider">
+          Direct Cooperative Lots &amp; Fresh Roasts
         </span>
-        <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold leading-tight mb-3">
-          Farm-Direct Kenyan Coffee, Roasted &amp; Delivered
+        <h1 class="font-serif text-3xl sm:text-5xl font-semibold text-white leading-tight">
+          Kenyan Highland Coffee Store
         </h1>
-        <p class="text-sm sm:text-base text-white/85 leading-relaxed">
-          Select your preferred coffee-growing region, choose between whole Roasted Beans (Medium or Dark Roast) or freshly Ground Coffee, and schedule doorstep delivery anywhere in Kenya.
+        <p class="text-sm sm:text-base text-white/75 leading-relaxed">
+          Order single-origin AA, AB, and Peaberry lots roasted to order or unroasted green beans, delivered across Kenya with exact Google Maps pin-drop dispatch.
         </p>
       </div>
 
-      <!-- Floating / Header Cart Summary Button -->
-      <button
-        type="button"
-        (click)="openCartDrawer('cart')"
-        class="btn-feedback self-start lg:self-center inline-flex items-center gap-3 bg-white text-[#4B3621] px-5 py-3.5 rounded-xl font-semibold text-sm shadow-md">
-        <svg class="w-5 h-5 text-[#2E7D32]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-        <span>Coffee Cart ({{ cart.totalItems() }})</span>
-        @if (cart.subtotal() > 0) {
-          <span class="px-2.5 py-0.5 rounded-full bg-[#2E7D32] text-white text-xs">
-            KES {{ cart.subtotal() | number }}
-          </span>
-        }
-      </button>
-    </div>
-  </div>
-
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 space-y-12">
-
-    <!-- AMAZON-STYLE LIVE PRODUCT CONFIGURATOR -->
-    <div
-      id="coffee-configurator"
-      class="bg-white rounded-2xl border border-[#4B3621]/15 shadow-xs overflow-hidden grid grid-cols-1 lg:grid-cols-12">
-
-      <!-- Left: Origin Image & Notes -->
-      <div class="lg:col-span-5 relative min-h-[260px] sm:min-h-[340px] bg-[#2C1E12]">
-        <img
-          [src]="activeProduct().image"
-          [alt]="activeProduct().displayName"
-          class="w-full h-full object-cover opacity-85"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent"></div>
-        <div class="absolute bottom-5 left-5 right-5 text-white">
-          <span class="inline-block bg-[#2E7D32] text-xs font-semibold px-3 py-1 rounded-full mb-2">
-            {{ activeProduct().region }} Region &bull; {{ activeProduct().elevation }}
-          </span>
-          <h2 class="font-serif text-2xl sm:text-3xl font-semibold mb-1">
-            {{ activeProduct().displayName }}
-          </h2>
-          <p class="text-xs sm:text-sm text-white/85">
-            <strong>Cup Notes:</strong> {{ activeProduct().tastingNotes }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Right: Customizer Controls -->
-      <div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-6">
-        <div class="space-y-5">
-          <div class="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#4B3621]/10 pb-4">
-            <div>
-              <span class="text-xs font-semibold uppercase tracking-wider text-[#2E7D32]">
-                Configure Your Bag
-              </span>
-              <h3 class="font-serif text-xl sm:text-2xl text-[#4B3621]">
-                {{ activeProduct().region }} Single-Origin Coffee
-              </h3>
-            </div>
-            <div class="text-right">
-              <div class="text-2xl font-bold text-[#4B3621]">
-                KES {{ currentUnitPrice() | number }}
-              </div>
-              <div class="text-xs text-[#333333]/65">per {{ selectedPack() }} pack</div>
-            </div>
-          </div>
-
-          <p class="text-sm text-[#333333]/80 leading-relaxed">
-            {{ activeProduct().description }}
-          </p>
-
-          <!-- 1. Coffee Region Selector -->
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-[#4B3621] mb-2">
-              1. Origin Region
-            </label>
-            <div class="flex flex-wrap gap-2">
-              @for (item of regions; track item.region) {
-                <button
-                  type="button"
-                  (click)="activeProduct.set(item)"
-                  [class]="activeProduct().region === item.region
-                    ? 'bg-[#4B3621] text-white border-[#4B3621]'
-                    : 'bg-[#FDFCF5] text-[#4B3621] border-[#4B3621]/20 hover:border-[#2E7D32]'"
-                  class="px-3.5 py-2 rounded-lg border text-xs sm:text-sm font-medium transition-colors cursor-pointer">
-                  {{ item.region === 'Muranga' ? "Murang'a" : item.region }}
-                </button>
-              }
-            </div>
-          </div>
-
-          <!-- 2. Coffee Form: Roasted Beans vs Ground Coffee -->
-          <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-[#4B3621] mb-2">
-              2. Preparation Form
-            </label>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button
-                type="button"
-                (click)="setCoffeeForm('Roasted Beans')"
-                [class]="selectedForm() === 'Roasted Beans'
-                  ? 'border-2 border-[#2E7D32] bg-[#2E7D32]/5 text-[#4B3621]'
-                  : 'border border-[#4B3621]/20 bg-white text-[#333333] hover:border-[#4B3621]/40'"
-                class="p-3.5 rounded-xl text-left transition-all cursor-pointer">
-                <div class="font-semibold text-sm">Roasted Beans</div>
-                <div class="text-xs text-[#333333]/70 mt-0.5">Whole beans — choose Medium or Dark roast</div>
-              </button>
-
-              <button
-                type="button"
-                (click)="setCoffeeForm('Ground Coffee')"
-                [class]="selectedForm() === 'Ground Coffee'
-                  ? 'border-2 border-[#2E7D32] bg-[#2E7D32]/5 text-[#4B3621]'
-                  : 'border border-[#4B3621]/20 bg-white text-[#333333] hover:border-[#4B3621]/40'"
-                class="p-3.5 rounded-xl text-left transition-all cursor-pointer">
-                <div class="font-semibold text-sm">Ground Coffee</div>
-                <div class="text-xs text-[#333333]/70 mt-0.5">Freshly ground and sealed for immediate brewing</div>
-              </button>
-            </div>
-          </div>
-
-          <!-- 3. Conditional Roast Level (Shown ONLY for Roasted Beans) -->
-          @if (selectedForm() === 'Roasted Beans') {
-            <div class="p-4 rounded-xl bg-[#FDFCF5] border border-[#4B3621]/15">
-              <label class="block text-xs font-bold uppercase tracking-wider text-[#4B3621] mb-2">
-                3. Roast Profile (Required for Roasted Beans)
-              </label>
-              <div class="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  (click)="selectedRoast.set('Medium Roast')"
-                  [class]="selectedRoast() === 'Medium Roast'
-                    ? 'bg-[#4B3621] text-white border-[#4B3621]'
-                    : 'bg-white text-[#4B3621] border-[#4B3621]/20 hover:border-[#2E7D32]'"
-                  class="py-2.5 px-4 rounded-lg border text-xs sm:text-sm font-semibold transition-colors cursor-pointer">
-                  Medium Roast
-                </button>
-
-                <button
-                  type="button"
-                  (click)="selectedRoast.set('Dark Roast')"
-                  [class]="selectedRoast() === 'Dark Roast'
-                    ? 'bg-[#4B3621] text-white border-[#4B3621]'
-                    : 'bg-white text-[#4B3621] border-[#4B3621]/20 hover:border-[#2E7D32]'"
-                  class="py-2.5 px-4 rounded-lg border text-xs sm:text-sm font-semibold transition-colors cursor-pointer">
-                  Dark Roast
-                </button>
-              </div>
-            </div>
-          }
-
-          <!-- 4. Pack Size & Quantity -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-[#4B3621] mb-2">
-                Pack Size
-              </label>
-              <div class="grid grid-cols-3 gap-2">
-                @for (size of ['250g', '500g', '1kg']; track size) {
-                  <button
-                    type="button"
-                    (click)="selectedPack.set($any(size))"
-                    [class]="selectedPack() === size
-                      ? 'bg-[#2E7D32] text-white border-[#2E7D32]'
-                      : 'bg-white text-[#4B3621] border-[#4B3621]/20'"
-                    class="py-2 rounded-lg border text-xs sm:text-sm font-semibold transition-colors cursor-pointer">
-                    {{ size }}
-                  </button>
-                }
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-[#4B3621] mb-2">
-                Quantity (Bags)
-              </label>
-              <div class="inline-flex items-center border border-[#4B3621]/20 rounded-lg bg-white overflow-hidden">
-                <button
-                  type="button"
-                  (click)="quantity.set(quantity() > 1 ? quantity() - 1 : 1)"
-                  class="px-4 py-2 text-[#4B3621] hover:bg-[#FDFCF5] font-bold cursor-pointer">
-                  &minus;
-                </button>
-                <span class="px-5 py-2 text-sm font-semibold text-[#4B3621]">{{ quantity() }}</span>
-                <button
-                  type="button"
-                  (click)="quantity.set(quantity() + 1)"
-                  class="px-4 py-2 text-[#4B3621] hover:bg-[#FDFCF5] font-bold cursor-pointer">
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Add to Cart CTA -->
-        <div class="pt-4 border-t border-[#4B3621]/10 flex flex-col sm:flex-row gap-3">
+      <!-- Grade Filter Pills + Cart Trigger -->
+      <div class="flex flex-wrap items-center gap-2">
+        @for (grade of ['ALL', 'AA', 'AB', 'PB']; track grade) {
           <button
             type="button"
-            (click)="addConfiguredToCart()"
-            class="btn-feedback flex-1 py-3.5 px-6 rounded-xl bg-[#2E7D32] hover:bg-[#256628] text-white font-semibold text-sm sm:text-base">
-            Add to Cart &mdash; KES {{ (currentUnitPrice() * quantity()) | number }}
+            (click)="selectedGrade.set(grade)"
+            [class]="selectedGrade() === grade
+              ? 'bg-[#2E7D32] text-white border-[#2E7D32]'
+              : 'bg-white/10 text-white/80 border-white/15 hover:bg-white/20'"
+            class="px-4 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-colors cursor-pointer">
+            {{ grade === 'ALL' ? 'All Grades' : 'Grade ' + grade }}
           </button>
-
-          @if (cart.totalItems() > 0) {
-            <button
-              type="button"
-              (click)="openCartDrawer('delivery')"
-              class="btn-feedback py-3.5 px-6 rounded-xl bg-[#4B3621] hover:bg-[#3A2919] text-white font-semibold text-sm sm:text-base">
-              Proceed to Checkout ({{ cart.totalItems() }})
-            </button>
-          }
-        </div>
-      </div>
-    </div>
-
-    <!-- BROWSE ALL 7 KENYAN REGIONS -->
-    <div>
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
-        <div>
-          <h2 class="font-serif text-2xl sm:text-3xl text-[#4B3621]">Explore Regional Lots</h2>
-          <p class="text-xs sm:text-sm text-[#333333]/75 mt-1">
-            Tap any region card to customize roast profile, grind form, and bag weight
-          </p>
-        </div>
-
-        <!-- Region Filter Pills -->
-        <div class="flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            (click)="selectedRegionFilter.set('All')"
-            [class]="selectedRegionFilter() === 'All' ? 'bg-[#4B3621] text-white' : 'bg-white text-[#4B3621] border border-[#4B3621]/15'"
-            class="px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer">
-            All Regions (7)
-          </button>
-          @for (item of regions; track item.region) {
-            <button
-              type="button"
-              (click)="selectedRegionFilter.set(item.region)"
-              [class]="selectedRegionFilter() === item.region ? 'bg-[#4B3621] text-white' : 'bg-white text-[#4B3621] border border-[#4B3621]/15'"
-              class="px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer">
-              {{ item.region === 'Muranga' ? "Murang'a" : item.region }}
-            </button>
-          }
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        @for (item of filteredProducts(); track item.region) {
-          <div
-            (click)="selectProductForConfig(item)"
-            class="card-feedback group bg-white rounded-2xl border border-[#4B3621]/10 overflow-hidden flex flex-col justify-between">
-            <div>
-              <div class="relative h-48 overflow-hidden bg-[#4B3621]/10">
-                <img
-                  [src]="item.image"
-                  [alt]="item.displayName"
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <span class="absolute top-3 left-3 bg-[#2E7D32] text-white text-xs font-semibold px-3 py-1 rounded-full">
-                  {{ item.region === 'Muranga' ? "Murang'a" : item.region }}
-                </span>
-                <span class="absolute top-3 right-3 bg-black/65 text-white text-[11px] font-medium px-2.5 py-1 rounded-full">
-                  {{ item.badge }}
-                </span>
-              </div>
-
-              <div class="p-5">
-                <h3 class="font-serif text-lg font-semibold text-[#4B3621] group-hover:text-[#2E7D32] transition-colors mb-1">
-                  {{ item.displayName }}
-                </h3>
-                <p class="text-xs font-medium text-[#2E7D32] mb-2">{{ item.tastingNotes }}</p>
-                <p class="text-xs sm:text-sm text-[#333333]/75 line-clamp-2">
-                  {{ item.description }}
-                </p>
-              </div>
-            </div>
-
-            <div class="px-5 py-4 bg-[#FDFCF5] border-t border-[#4B3621]/10 flex items-center justify-between">
-              <div>
-                <span class="text-xs text-[#333333]/60 block">From (500g)</span>
-                <span class="font-bold text-[#4B3621]">KES {{ item.basePrice500g | number }}</span>
-              </div>
-              <span class="text-xs font-semibold text-[#2E7D32] group-hover:underline">
-                Select &amp; Customize &rarr;
-              </span>
-            </div>
-          </div>
         }
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- SLIDE-OVER CART & DELIVERY CHECKOUT DRAWER -->
-@if (cart.drawerOpen()) {
-  <div class="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs">
-    <div class="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto">
-
-      <!-- Drawer Header -->
-      <div class="p-5 border-b border-[#4B3621]/10 flex items-center justify-between bg-[#FDFCF5] sticky top-0 z-10">
-        <div>
-          <h2 class="font-serif text-xl font-semibold text-[#4B3621]">
-            @if (checkoutStep() === 'cart') { Your Coffee Cart ({{ cart.totalItems() }}) }
-            @if (checkoutStep() === 'delivery') { Arrange Delivery }
-            @if (checkoutStep() === 'confirmed') { Order Confirmed }
-          </h2>
-          @if (addedBanner() && checkoutStep() === 'cart') {
-            <p class="text-xs text-[#2E7D32] font-medium mt-0.5">{{ addedBanner() }}</p>
-          }
-        </div>
 
         <button
           type="button"
-          (click)="cart.drawerOpen.set(false)"
-          class="p-2 rounded-lg text-[#4B3621] hover:bg-[#4B3621]/10 cursor-pointer"
-          aria-label="Close drawer">
-          ✕
+          (click)="openCartDrawer('cart')"
+          class="ml-1 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FDFCF5] text-[#4B3621] hover:bg-white font-semibold text-xs sm:text-sm shadow-md transition-colors cursor-pointer">
+          <span>Cart ({{ cart.totalItems() }})</span>
+          <span class="text-[#2E7D32] font-bold">KES {{ subtotal() | number }}</span>
         </button>
       </div>
+    </div>
+  </div>
 
-      <!-- Drawer Body -->
-      <div class="p-5 flex-1 space-y-5">
+  <!-- Product Grid -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+      @for (product of filteredProducts(); track product.id) {
+        <div class="bg-white rounded-2xl border border-[#4B3621]/12 shadow-xs overflow-hidden flex flex-col">
+          <!-- Image Header -->
+          <div class="relative h-52 bg-[#1A110A] overflow-hidden">
+            <img
+              [src]="product.image"
+              [alt]="product.name"
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+            <span class="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-[#4B3621]/90 text-white text-xs font-bold">
+              Grade {{ product.grade }}
+            </span>
+            <span class="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-full bg-black/60 text-white/90 text-[11px] font-medium">
+              {{ product.roastLevel }}
+            </span>
+            <div class="absolute bottom-3 left-4 right-4 text-white">
+              <div class="text-[11px] uppercase tracking-wider text-[#66BB6A] font-semibold">
+                {{ product.region }} &bull; {{ product.altitude }}
+              </div>
+              <h2 class="font-serif text-xl font-semibold leading-snug">
+                {{ product.name }}
+              </h2>
+            </div>
+          </div>
 
-        <!-- VIEW 1: CART ITEMS -->
-        @if (checkoutStep() === 'cart') {
-          @if (cart.items().length === 0) {
-            <div class="text-center py-16">
-              <p class="font-serif text-xl text-[#4B3621] mb-2">Your cart is empty</p>
-              <p class="text-sm text-[#333333]/70 mb-6">
-                Choose a Kenyan coffee region and roast preference to add bags to your order.
+          <!-- Product Options -->
+          <div class="p-6 flex-1 flex flex-col justify-between space-y-5">
+            <p class="text-xs sm:text-sm text-[#333333]/80 leading-relaxed">
+              {{ product.tastingNotes }}
+            </p>
+
+            <div class="space-y-4">
+              <!-- Bag Size Selector -->
+              <div>
+                <label class="block text-xs font-semibold text-[#4B3621] mb-1.5">Bag Size</label>
+                <div class="grid grid-cols-3 gap-2">
+                  @for (size of ['250g', '500g', '1kg']; track size) {
+                    <button
+                      type="button"
+                      (click)="setSize(product.id, $any(size))"
+                      [class]="getSize(product.id) === size
+                        ? 'bg-[#4B3621] text-white border-[#4B3621]'
+                        : 'bg-[#FDFCF5] text-[#4B3621] border-[#4B3621]/20 hover:border-[#4B3621]'"
+                      class="py-2 rounded-lg border text-xs font-semibold transition-colors cursor-pointer">
+                      {{ size }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Grind Selector -->
+              <div>
+                <label class="block text-xs font-semibold text-[#4B3621] mb-1.5">Grind Preference</label>
+                @if (product.roastLevel === 'Green (Unroasted)') {
+                  <div class="px-3 py-2 rounded-lg bg-[#FDFCF5] border border-[#4B3621]/15 text-xs text-[#4B3621]/80 font-medium">
+                    Unroasted Green Beans (Export Lot)
+                  </div>
+                } @else {
+                  <select
+                    [ngModel]="getGrind(product.id)"
+                    (ngModelChange)="setGrind(product.id, $event)"
+                    class="w-full px-3 py-2 rounded-lg border border-[#4B3621]/20 bg-[#FDFCF5] text-xs font-medium text-[#4B3621] focus:outline-none focus:ring-2 focus:ring-[#2E7D32]">
+                    <option value="Whole Bean">Whole Bean</option>
+                    <option value="Filter / Pour-Over">Filter / Pour-Over</option>
+                    <option value="Espresso">Espresso Fine</option>
+                    <option value="French Press">French Press Coarse</option>
+                  </select>
+                }
+              </div>
+
+              <!-- Price + Add to Cart -->
+              <div class="pt-3 border-t border-[#4B3621]/10 flex items-center justify-between gap-3">
+                <div>
+                  <span class="block text-[11px] text-[#333333]/60">Price ({{ getSize(product.id) }})</span>
+                  <span class="font-serif text-xl font-bold text-[#4B3621]">
+                    KES {{ getUnitPrice(product) | number }}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  (click)="addToCart(product)"
+                  [class]="addedFeedbackId() === product.id
+                    ? 'bg-[#1B5E20] text-white'
+                    : 'bg-[#2E7D32] hover:bg-[#256628] text-white'"
+                  class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer shadow-2xs">
+                  {{ addedFeedbackId() === product.id ? 'Added ✓' : 'Add to Cart' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Floating Bottom Cart Bar (When Cart Has Items) -->
+  @if (cart.totalItems() > 0 && !drawerOpen()) {
+    <div class="fixed bottom-5 inset-x-4 sm:inset-x-auto sm:right-6 z-30">
+      <button
+        type="button"
+        (click)="openCartDrawer('cart')"
+        class="w-full sm:w-auto flex items-center justify-between gap-5 px-5 py-3.5 rounded-2xl bg-[#1A110A] text-white shadow-2xl border border-white/15 hover:bg-[#261A11] transition-colors cursor-pointer">
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-full bg-[#2E7D32] text-white text-xs font-bold flex items-center justify-center">
+            {{ cart.totalItems() }}
+          </span>
+          <div class="text-left">
+            <div class="text-xs text-white/70">Coffee Cart</div>
+            <div class="text-sm font-bold">KES {{ subtotal() | number }}</div>
+          </div>
+        </div>
+        <span class="text-xs font-semibold text-[#66BB6A]">Checkout &rarr;</span>
+      </button>
+    </div>
+  }
+
+  <!-- SLIDE-OVER CART & GOOGLE MAPS CHECKOUT DRAWER -->
+  @if (drawerOpen()) {
+    <div class="fixed inset-0 z-50 flex justify-end">
+      <!-- Backdrop -->
+      <div (click)="closeCartDrawer()" class="fixed inset-0 bg-black/60 backdrop-blur-2xs"></div>
+
+      <!-- Drawer Panel -->
+      <div class="relative z-10 w-full max-w-lg bg-[#FDFCF5] text-[#333333] h-full flex flex-col shadow-2xl">
+        <!-- Drawer Header -->
+        <div class="px-6 py-4 bg-[#1A110A] text-white flex items-center justify-between">
+          <div>
+            <h2 class="font-serif text-xl font-semibold">
+              @if (orderSuccessNumber()) {
+                Order Confirmed
+              } @else if (checkoutStep() === 'cart') {
+                Your Coffee Cart ({{ cart.totalItems() }})
+              } @else if (checkoutStep() === 'delivery') {
+                Delivery Location
+              } @else {
+                Confirm Order
+              }
+            </h2>
+            <p class="text-xs text-white/65">Kilimo Coffee Direct Dispatch</p>
+          </div>
+          <button
+            type="button"
+            (click)="closeCartDrawer()"
+            class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer">
+            &#10005;
+          </button>
+        </div>
+
+        <!-- Drawer Body -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-5">
+          @if (orderError()) {
+            <div class="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm">
+              {{ orderError() }}
+            </div>
+          }
+
+          <!-- ORDER SUCCESS VIEW -->
+          @if (orderSuccessNumber()) {
+            <div class="p-6 rounded-2xl bg-white border border-[#2E7D32]/30 text-center space-y-4">
+              <div class="w-12 h-12 rounded-full bg-[#2E7D32]/15 text-[#2E7D32] flex items-center justify-center mx-auto text-xl font-bold">
+                &#10003;
+              </div>
+              <h3 class="font-serif text-2xl font-semibold text-[#4B3621]">Thank You for Your Order!</h3>
+              <p class="text-sm text-[#333333]/80">
+                Reference <span class="font-mono font-bold text-[#2E7D32]">{{ orderSuccessNumber() }}</span> has been logged for dispatch. Our team will reach out shortly to coordinate delivery.
               </p>
               <button
                 type="button"
-                (click)="cart.drawerOpen.set(false)"
-                class="btn-feedback px-5 py-2.5 rounded-lg bg-[#2E7D32] text-white text-sm font-medium">
-                Browse Coffee Regions
+                (click)="closeCartDrawer()"
+                class="w-full py-3 rounded-xl bg-[#2E7D32] text-white font-semibold text-sm cursor-pointer">
+                Continue Browsing
               </button>
             </div>
-          } @else {
-            <div class="space-y-3">
-              @for (item of cart.items(); track item.key) {
-                <div class="p-4 rounded-xl border border-[#4B3621]/15 bg-[#FDFCF5] flex gap-3.5 items-center">
-                  <img [src]="item.image" [alt]="item.region" class="w-16 h-16 rounded-lg object-cover shrink-0" />
-                  <div class="flex-1 min-w-0">
-                    <div class="font-serif font-semibold text-[#4B3621] text-sm sm:text-base">
-                      {{ item.region === 'Muranga' ? "Murang'a" : item.region }} Coffee
-                    </div>
-                    <div class="text-xs text-[#333333]/75">
-                      {{ item.coffeeForm }}@if (item.roastLevel) { &bull; {{ item.roastLevel }} } &bull; {{ item.packSize }}
-                    </div>
-                    <div class="text-xs font-bold text-[#2E7D32] mt-1">
-                      KES {{ (item.unitPrice * item.quantity) | number }}
-                    </div>
-                  </div>
+          }
 
-                  <div class="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      (click)="cart.updateQuantity(item.key, -1)"
-                      class="w-7 h-7 rounded-md bg-white border border-[#4B3621]/20 text-xs font-bold cursor-pointer">
-                      &minus;
-                    </button>
-                    <span class="w-6 text-center text-xs font-semibold">{{ item.quantity }}</span>
-                    <button
-                      type="button"
-                      (click)="cart.updateQuantity(item.key, 1)"
-                      class="w-7 h-7 rounded-md bg-white border border-[#4B3621]/20 text-xs font-bold cursor-pointer">
-                      +
-                    </button>
+          <!-- STEP 1: CART ITEMS -->
+          @else if (checkoutStep() === 'cart') {
+            @if (cart.items().length === 0) {
+              <div class="text-center py-16 space-y-3">
+                <p class="font-serif text-xl text-[#4B3621]">Your coffee cart is empty</p>
+                <p class="text-xs text-[#333333]/70">Select a roast or green lot from the catalog to get started.</p>
+              </div>
+            } @else {
+              <div class="space-y-3">
+                @for (item of cart.items(); track item.key) {
+                  <div class="p-4 rounded-xl bg-white border border-[#4B3621]/10 flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                      <h4 class="font-serif text-base font-semibold text-[#4B3621] truncate">{{ getCartItemName(item) }}</h4>
+                      <p class="text-xs text-[#333333]/70">{{ item.packSize }} &bull; {{ getCartItemPreparation(item) }}</p>
+                      <p class="text-xs font-bold text-[#2E7D32] mt-1">
+                        KES {{ (item.unitPrice * item.quantity) | number }}
+                      </p>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        (click)="changeItemQuantity(item, -1)"
+                        class="w-7 h-7 rounded-lg border border-[#4B3621]/20 text-sm font-bold text-[#4B3621] cursor-pointer">
+                        -
+                      </button>
+                      <span class="w-6 text-center text-xs font-bold">{{ item.quantity }}</span>
+                      <button
+                        type="button"
+                        (click)="changeItemQuantity(item, 1)"
+                        class="w-7 h-7 rounded-lg border border-[#4B3621]/20 text-sm font-bold text-[#4B3621] cursor-pointer">
+                        +
+                      </button>
+                    </div>
                   </div>
+                }
+              </div>
+            }
+          }
+
+          <!-- STEP 2: DELIVERY & GOOGLE MAPS PIN PICKER -->
+          @else if (checkoutStep() === 'delivery') {
+            <div class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-[#4B3621] mb-1">Full Name *</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="deliveryForm.fullName"
+                    placeholder="e.g. Wanjiku Kamau"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 bg-white text-sm"
+                  />
                 </div>
-              }
-            </div>
-          }
-        }
-
-        <!-- VIEW 2: DELIVERY ARRANGEMENT FORM -->
-        @if (checkoutStep() === 'delivery') {
-          @if (checkoutError()) {
-            <div class="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm">
-              {{ checkoutError() }}
-            </div>
-          }
-
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-[#4B3621] mb-1">Delivery Option *</label>
-              <div class="grid grid-cols-2 gap-2.5">
-                <button
-                  type="button"
-                  (click)="deliveryForm.deliveryMethod = 'Doorstep Delivery'"
-                  [class]="deliveryForm.deliveryMethod === 'Doorstep Delivery'
-                    ? 'border-2 border-[#2E7D32] bg-[#2E7D32]/5 text-[#4B3621]'
-                    : 'border border-[#4B3621]/20 text-[#333333]'"
-                  class="p-3 rounded-xl text-left text-xs cursor-pointer">
-                  <div class="font-bold">Doorstep Delivery</div>
-                  <div class="text-[#333333]/70 mt-0.5">KES 350 (Free 5,000+)</div>
-                </button>
-
-                <button
-                  type="button"
-                  (click)="deliveryForm.deliveryMethod = 'Pickup Station'"
-                  [class]="deliveryForm.deliveryMethod === 'Pickup Station'
-                    ? 'border-2 border-[#2E7D32] bg-[#2E7D32]/5 text-[#4B3621]'
-                    : 'border border-[#4B3621]/20 text-[#333333]'"
-                  class="p-3 rounded-xl text-left text-xs cursor-pointer">
-                  <div class="font-bold">Pickup Station</div>
-                  <div class="text-[#333333]/70 mt-0.5">KES 150 Flat Rate</div>
-                </button>
+                <div>
+                  <label class="block text-xs font-semibold text-[#4B3621] mb-1">Phone Number *</label>
+                  <input
+                    type="tel"
+                    [(ngModel)]="deliveryForm.phone"
+                    placeholder="e.g. 0712 345 678"
+                    class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 bg-white text-sm"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-semibold text-[#4B3621] mb-1">Recipient Full Name *</label>
-                <input type="text" [(ngModel)]="deliveryForm.fullName" placeholder="e.g. Wanjiku Kamau"
-                  class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 text-sm" />
+                <label class="block text-xs font-semibold text-[#4B3621] mb-1">Email Address</label>
+                <input
+                  type="email"
+                  [(ngModel)]="deliveryForm.email"
+                  placeholder="you@example.com"
+                  class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 bg-white text-sm"
+                />
               </div>
-              <div>
-                <label class="block text-xs font-semibold text-[#4B3621] mb-1">Phone Number *</label>
-                <input type="tel" [(ngModel)]="deliveryForm.phone" placeholder="+254 7XX XXX XXX"
-                  class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 text-sm" />
-              </div>
-            </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Delivery Method (Flat-rate only — no free delivery) -->
+              <div>
+                <label class="block text-xs font-semibold text-[#4B3621] mb-1.5">Delivery Option *</label>
+                <div class="grid grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    (click)="deliveryForm.deliveryMethod = 'Doorstep Delivery'"
+                    [class]="deliveryForm.deliveryMethod === 'Doorstep Delivery'
+                      ? 'bg-[#4B3621] text-white border-[#4B3621]'
+                      : 'bg-white text-[#4B3621] border-[#4B3621]/20'"
+                    class="p-3 rounded-xl border text-left transition-colors cursor-pointer">
+                    <div class="text-xs font-bold">Doorstep Delivery</div>
+                    <div class="text-[11px] opacity-80">KES 350 Flat Rate</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="deliveryForm.deliveryMethod = 'Pickup Station'"
+                    [class]="deliveryForm.deliveryMethod === 'Pickup Station'
+                      ? 'bg-[#4B3621] text-white border-[#4B3621]'
+                      : 'bg-white text-[#4B3621] border-[#4B3621]/20'"
+                    class="p-3 rounded-xl border text-left transition-colors cursor-pointer">
+                    <div class="text-xs font-bold">Pickup Station</div>
+                    <div class="text-[11px] opacity-80">KES 150 Flat Rate</div>
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label class="block text-xs font-semibold text-[#4B3621] mb-1">County *</label>
-                <select [(ngModel)]="deliveryForm.county"
-                  class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 text-sm bg-white">
-                  @for (c of kenyanCounties; track c) {
+                <select
+                  [(ngModel)]="deliveryForm.county"
+                  class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 bg-white text-sm">
+                  @for (c of counties; track c) {
                     <option [value]="c">{{ c }}</option>
                   }
                 </select>
               </div>
+
+              <!-- Google Maps Search & Draggable Pin -->
               <div>
-                <label class="block text-xs font-semibold text-[#4B3621] mb-1">Preferred Delivery Date</label>
-                <input type="date" [(ngModel)]="deliveryForm.preferredDeliveryDate"
-                  class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 text-sm" />
+                <label class="block text-xs font-semibold text-[#4B3621] mb-1">
+                  Search Delivery Address or Drag Map Pin *
+                </label>
+                <input
+                  id="delivery-address-input"
+                  type="text"
+                  [(ngModel)]="deliveryForm.deliveryLocation"
+                  placeholder="Search estate, street, or landmark in Kenya..."
+                  class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 bg-white text-sm mb-2.5"
+                />
+                <div
+                  id="delivery-map"
+                  class="w-full h-48 rounded-xl border border-[#4B3621]/20 overflow-hidden bg-[#EFECE1] flex items-center justify-center">
+                  @if (!mapsReady()) {
+                    <span class="text-xs text-[#4B3621]/70 px-4 text-center">
+                      Loading interactive map... (You can also type your exact street/building above)
+                    </span>
+                  }
+                </div>
+                <p class="text-[11px] text-[#333333]/65 mt-1">
+                  Choose a suggestion above or drag the red pin to your exact gate for the rider.
+                </p>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-[#4B3621] mb-1">Rider Notes (Optional)</label>
+                <input
+                  type="text"
+                  [(ngModel)]="deliveryForm.notes"
+                  placeholder="Apartment number, gate code, or landmark..."
+                  class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 bg-white text-sm"
+                />
               </div>
             </div>
+          }
 
-            <div>
-              <label class="block text-xs font-semibold text-[#4B3621] mb-1">Street / Estate / Drop-off Landmark *</label>
-              <input type="text" [(ngModel)]="deliveryForm.deliveryLocation"
-                placeholder="e.g. Kilimani, Argwings Kodhek Rd, Gate 14"
-                class="w-full px-3.5 py-2.5 rounded-lg border border-[#4B3621]/20 text-sm" />
-            </div>
+          <!-- STEP 3: ORDER REVIEW & CONFIRM -->
+          @else if (checkoutStep() === 'confirm') {
+            <div class="space-y-4">
+              <div class="p-4 rounded-xl bg-white border border-[#4B3621]/15 space-y-2 text-xs sm:text-sm">
+                <div class="font-semibold text-[#4B3621]">Recipient &amp; Dispatch</div>
+                <p><span class="text-[#333333]/65">Name:</span> {{ deliveryForm.fullName }} ({{ deliveryForm.phone }})</p>
+                <p><span class="text-[#333333]/65">Method:</span> {{ deliveryForm.deliveryMethod }} &mdash; {{ deliveryForm.county }}</p>
+                <p><span class="text-[#333333]/65">Location:</span> {{ deliveryForm.deliveryLocation }}</p>
+                @if (deliveryForm.mapsUrl) {
+                  <a
+                    [href]="deliveryForm.mapsUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-block text-xs font-semibold text-[#2E7D32] underline">
+                    Verify Pinned Location on Google Maps &nearr;
+                  </a>
+                }
+              </div>
 
-            <div>
-              <label class="block text-xs font-semibold text-[#4B3621] mb-1">Delivery Instructions (Optional)</label>
-              <textarea rows="2" [(ngModel)]="deliveryForm.deliveryNotes"
-                placeholder="Call upon arrival at the main gate..."
-                class="w-full px-3.5 py-2 rounded-lg border border-[#4B3621]/20 text-sm"></textarea>
-            </div>
-          </div>
-        }
-
-        <!-- VIEW 3: ORDER CONFIRMED -->
-        @if (checkoutStep() === 'confirmed' && confirmedOrder(); as order) {
-          <div class="text-center py-8 space-y-4">
-            <div class="w-14 h-14 rounded-full bg-[#2E7D32]/15 text-[#2E7D32] flex items-center justify-center mx-auto text-2xl font-bold">
-              ✓
-            </div>
-            <h3 class="font-serif text-2xl text-[#4B3621]">Thank You, {{ order.customer.fullName }}!</h3>
-            <p class="text-sm text-[#333333]/80">
-              Your coffee order has been dispatched to our delivery queue.
-            </p>
-            <div class="p-4 rounded-xl bg-[#FDFCF5] border border-[#4B3621]/15 text-left text-xs sm:text-sm space-y-1.5">
-              <div><strong>Order Reference:</strong> <span class="font-mono text-[#2E7D32] font-bold">{{ order.orderNumber }}</span></div>
-              <div><strong>Destination:</strong> {{ order.customer.county }} &mdash; {{ order.customer.deliveryLocation }}</div>
-              <div><strong>Contact Phone:</strong> {{ order.customer.phone }}</div>
-              <div><strong>Total Payable:</strong> KES {{ order.totalAmount | number }}</div>
-            </div>
-            <button
-              type="button"
-              (click)="cart.drawerOpen.set(false); checkoutStep.set('cart')"
-              class="btn-feedback w-full py-3 rounded-xl bg-[#2E7D32] text-white font-semibold text-sm">
-              Continue Shopping
-            </button>
-          </div>
-        }
-
-      </div>
-
-      <!-- Drawer Footer Totals & Actions -->
-      @if (cart.items().length > 0 && checkoutStep() !== 'confirmed') {
-        <div class="p-5 border-t border-[#4B3621]/10 bg-[#FDFCF5] space-y-3">
-          <div class="space-y-1 text-xs sm:text-sm">
-            <div class="flex justify-between text-[#333333]/80">
-              <span>Coffee Subtotal</span>
-              <span>KES {{ cart.subtotal() | number }}</span>
-            </div>
-            <div class="flex justify-between text-[#333333]/80">
-              <span>Delivery Fee</span>
-              <span>{{ deliveryFee() === 0 ? 'FREE' : 'KES ' + (deliveryFee() | number) }}</span>
-            </div>
-            <div class="flex justify-between text-base font-bold text-[#4B3621] pt-1 border-t border-[#4B3621]/10">
-              <span>Total</span>
-              <span>KES {{ grandTotal() | number }}</span>
-            </div>
-          </div>
-
-          @if (checkoutStep() === 'cart') {
-            <button
-              type="button"
-              (click)="checkoutStep.set('delivery')"
-              class="btn-feedback w-full py-3.5 rounded-xl bg-[#2E7D32] hover:bg-[#256628] text-white font-semibold text-sm">
-              Arrange Delivery &amp; Checkout &rarr;
-            </button>
-          } @else if (checkoutStep() === 'delivery') {
-            <div class="flex gap-2">
-              <button
-                type="button"
-                (click)="checkoutStep.set('cart')"
-                class="px-4 py-3 rounded-xl border border-[#4B3621]/20 text-xs sm:text-sm font-medium text-[#4B3621] cursor-pointer">
-                &larr; Back
-              </button>
-              <button
-                type="button"
-                [disabled]="submittingOrder()"
-                (click)="submitCoffeeOrder()"
-                class="btn-feedback flex-1 py-3 rounded-xl bg-[#2E7D32] hover:bg-[#256628] disabled:opacity-60 text-white font-semibold text-sm">
-                {{ submittingOrder() ? 'Placing Order...' : 'Confirm Coffee Order' }}
-              </button>
+              <div class="p-4 rounded-xl bg-white border border-[#4B3621]/15 space-y-2 text-xs sm:text-sm">
+                <div class="font-semibold text-[#4B3621]">Items ({{ cart.totalItems() }})</div>
+                @for (item of cart.items(); track item.key) {
+                  <div class="flex justify-between">
+                    <span>{{ item.quantity }}&times; {{ getCartItemName(item) }} ({{ item.packSize }})</span>
+                    <span class="font-semibold">KES {{ (item.unitPrice * item.quantity) | number }}</span>
+                  </div>
+                }
+              </div>
             </div>
           }
         </div>
-      }
 
+        <!-- Drawer Footer Totals & Navigation -->
+        @if (!orderSuccessNumber() && cart.items().length > 0) {
+          <div class="p-6 bg-white border-t border-[#4B3621]/15 space-y-4">
+            <div class="space-y-1.5 text-xs sm:text-sm">
+              <div class="flex justify-between text-[#333333]/75">
+                <span>Subtotal</span>
+                <span>KES {{ subtotal() | number }}</span>
+              </div>
+              <div class="flex justify-between text-[#333333]/75">
+                <span>Delivery ({{ deliveryForm.deliveryMethod }})</span>
+                <span>KES {{ deliveryFee() | number }}</span>
+              </div>
+              <div class="flex justify-between text-base font-bold text-[#4B3621] pt-2 border-t border-[#4B3621]/10">
+                <span>Total</span>
+                <span>KES {{ grandTotal() | number }}</span>
+              </div>
+            </div>
+
+            @if (checkoutStep() === 'cart') {
+              <button
+                type="button"
+                (click)="goToStep('delivery')"
+                class="w-full py-3.5 rounded-xl bg-[#2E7D32] hover:bg-[#256628] text-white font-semibold text-sm transition-colors cursor-pointer">
+                Continue to Delivery &rarr;
+              </button>
+            } @else if (checkoutStep() === 'delivery') {
+              <div class="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  (click)="goToStep('cart')"
+                  class="py-3 rounded-xl border border-[#4B3621]/20 text-[#4B3621] font-semibold text-sm cursor-pointer">
+                  &larr; Back
+                </button>
+                <button
+                  type="button"
+                  (click)="proceedToConfirm()"
+                  class="py-3 rounded-xl bg-[#2E7D32] hover:bg-[#256628] text-white font-semibold text-sm cursor-pointer">
+                  Review Order &rarr;
+                </button>
+              </div>
+            } @else {
+              <div class="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  (click)="goToStep('delivery')"
+                  class="py-3 rounded-xl border border-[#4B3621]/20 text-[#4B3621] font-semibold text-sm cursor-pointer">
+                  &larr; Edit Delivery
+                </button>
+                <button
+                  type="button"
+                  [disabled]="submittingOrder()"
+                  (click)="submitOrder()"
+                  class="py-3 rounded-xl bg-[#2E7D32] hover:bg-[#256628] disabled:opacity-60 text-white font-semibold text-sm cursor-pointer">
+                  {{ submittingOrder() ? 'Placing Order...' : 'Place Order' }}
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
     </div>
-  </div>
-}
+  }
+</section>

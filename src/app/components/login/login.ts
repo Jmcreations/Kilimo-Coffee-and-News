@@ -2,7 +2,12 @@ import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { PublicClientApplication } from '@azure/msal-browser';
 import { AuthService } from '../../services/auth.service';
+import { ConfigService } from '../../services/config';
+
+declare const google: any;
+declare const AppleID: any;
 
 @Component({
   selector: 'app-login',
@@ -12,6 +17,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class Login implements OnInit {
   private authService = inject(AuthService);
+  private configService = inject(ConfigService);
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
 
@@ -44,6 +50,8 @@ export class Login implements OnInit {
   loading = signal<boolean>(false);
   errorMessage = signal<string>('');
 
+  private msalInstance: PublicClientApplication | null = null;
+
   ngOnInit(): void {
     if (this.route.snapshot.routeConfig?.path === 'sign-up') {
       this.mode.set('signup');
@@ -56,6 +64,9 @@ export class Login implements OnInit {
         /Mac|iPhone|iPad|iPod/i.test(platform) ||
         /Macintosh|Mac OS X|iPhone|iPad|iPod/i.test(ua);
       this.isAppleDevice.set(isApple);
+
+      // Preload public OAuth client IDs from Northflank
+      this.configService.ensureLoaded();
     }
   }
 
@@ -98,25 +109,108 @@ export class Login implements OnInit {
     });
   }
 
-  continueWithProvider(provider: 'google' | 'microsoft' | 'apple'): void {
-    // Wire your Google Identity Services / MSAL / Apple JS SDK token callback here;
-    // once the SDK returns the user's verified email & name, pass them to authService.oauthLogin:
-    const demoEmail = this.email.trim();
-    if (!demoEmail) {
-      this.errorMessage.set(
-        `Enter your ${provider.charAt(0).toUpperCase() + provider.slice(1)} email above or connect your OAuth Client ID to launch the popup.`
-      );
-      return;
-    }
-
+  async continueWithProvider(provider: 'google' | 'microsoft' | 'apple'): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.errorMessage.set('');
     this.loading.set(true);
-    const derivedName = `${this.firstName} ${this.lastName}`.trim() || demoEmail.split('@')[0];
-    this.authService.oauthLogin(provider, demoEmail, derivedName).subscribe({
-      next: () => this.loading.set(false),
-      error: (err) => {
-        this.loading.set(false);
-        this.errorMessage.set(err.error?.message || 'Social sign-in failed.');
+
+    try {
+      const cfg = await this.configService.ensureLoaded();
+
+      if (provider === 'google') {
+        if (!cfg.googleClientId || typeof google === 'undefined') {
+          this.loading.set(false);
+          this.errorMessage.set('Google Sign-In is still initializing. Please try again in a moment.');
+          return;
+        }
+
+        google.accounts.id.initialize({
+          client_id: cfg.googleClientId,
+          callback: (response: any) => {
+            this.authService
+              .oauthLogin({ provider: 'google', idToken: response.credential })
+              .subscribe({
+                next: () => this.loading.set(false),
+                error: (err) => {
+                  this.loading.set(false);
+                  this.errorMessage.set(err.error?.message || 'Google sign-in failed.');
+                }
+              });
+          }
+        });
+
+        google.accounts.id.prompt((notification: any) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            this.loading.set(false);
+          }
+        });
+      } else if (provider === 'microsoft') {
+        if (!cfg.microsoftClientId) {
+          this.loading.set(false);
+          this.errorMessage.set('Microsoft Sign-In is not configured yet.');
+          return;
+        }
+
+        if (!this.msalInstance) {
+          this.msalInstance = new PublicClientApplication({
+            auth: {
+              clientId: cfg.microsoftClientId,
+              redirectUri: window.location.origin
+            }
+          });
+          await this.msalInstance.initialize();
+        }
+
+        const result = await this.msalInstance.loginPopup({ scopes: ['User.Read'] });
+        this.authService
+          .oauthLogin({
+            provider: 'microsoft',
+            accessToken: result.accessToken,
+            fallbackName: result.account?.name || ''
+          })
+          .subscribe({
+            next: () => this.loading.set(false),
+            error: (err) => {
+              this.loading.set(false);
+              this.errorMessage.set(err.error?.message || 'Microsoft sign-in failed.');
+            }
+          });
+      } else if (provider === 'apple') {
+        if (!cfg.appleClientId || typeof AppleID === 'undefined') {
+          this.loading.set(false);
+          this.errorMessage.set('Apple Sign-In is not configured yet.');
+          return;
+        }
+
+        AppleID.auth.init({
+          clientId: cfg.appleClientId,
+          scope: 'name email',
+          redirectURI: window.location.origin + '/login',
+          usePopup: true
+        });
+
+        const appleRes = await AppleID.auth.signIn();
+        const fullName = appleRes.user?.name
+          ? `${appleRes.user.name.firstName || ''} ${appleRes.user.name.lastName || ''}`.trim()
+          : '';
+
+        this.authService
+          .oauthLogin({
+            provider: 'apple',
+            idToken: appleRes.authorization.id_token,
+            fallbackName: fullName
+          })
+          .subscribe({
+            next: () => this.loading.set(false),
+            error: (err) => {
+              this.loading.set(false);
+              this.errorMessage.set(err.error?.message || 'Apple sign-in failed.');
+            }
+          });
       }
-    });
+    } catch (err: any) {
+      this.loading.set(false);
+      this.errorMessage.set(err?.message || 'Sign-in popup was closed or blocked.');
+    }
   }
 }

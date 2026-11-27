@@ -13,7 +13,9 @@ const tickerRoutes = require('./routes/ticker');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const configRoutes = require('./routes/configRoutes');
 const { startNceTuesdayCron } = require('./jobs/nceSync');
+const { startReviewEmailCron } = require('./services/emailService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,14 +25,23 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+const allowedOrigins = [
+  'https://an-coffee-main.vercel.app',
+  'https://kilimo-coffee-and-news.vercel.app',
+  'https://kilimocoffeeandnews.vercel.app',
+  'https://kilimonews.co.ke',
+  'https://www.kilimonews.co.ke',
+  /\.vercel\.app$/,
+  /\.pages\.dev$/,
+  'http://localhost:4200'
+];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL.trim().replace(/\/+$/, ''));
+}
+
 app.use(cors({
-  origin: [
-    'https://an-coffee-main.vercel.app',
-    'https://kilimo-coffee-and-news.vercel.app',
-    'https://kilimocoffeeandnews.vercel.app',
-    /\.vercel\.app$/,
-    'http://localhost:4200'
-  ],
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -56,21 +67,20 @@ app.use('/api/auth', resolveHandler(authRoutes));
 app.use('/api/users', resolveHandler(userRoutes));
 app.use('/api/orders', resolveHandler(orderRoutes));
 app.use('/api/news', resolveHandler(newsRoutes));
+app.use('/api/config', resolveHandler(configRoutes));
 app.use('/api/ticker', resolveHandler(tickerRoutes));
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch((err) => console.error('MongoDB connection error:', err));
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
-});
 
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB Atlas');
     startNceTuesdayCron();
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    startReviewEmailCron();
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   })
-  .catch((err) => console.error('MongoDB connection error:', err));
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });

@@ -69,6 +69,9 @@ const orderSchema = new mongoose.Schema(
       fullName: { type: String, required: true, trim: true },
       phone: { type: String, required: true, trim: true },
       email: { type: String, trim: true, default: '' },
+      latitude: { type: Number, default: null },
+      longitude: { type: Number, default: null },
+      mapsUrl: { type: String, default: '' },
       county: { type: String, required: true, trim: true },
       deliveryLocation: { type: String, required: true, trim: true },
       deliveryNotes: { type: String, trim: true, default: '' }
@@ -78,6 +81,10 @@ const orderSchema = new mongoose.Schema(
       enum: ['Doorstep Delivery', 'Pickup Station'],
       default: 'Doorstep Delivery'
     },
+
+    deliveredAt: { type: Date, default: null },
+    reviewEmailSent: { type: Boolean, default: false },
+
     preferredDeliveryDate: {
       type: String,
       trim: true,

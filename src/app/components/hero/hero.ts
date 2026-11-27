@@ -15,8 +15,9 @@ export class Hero {
   cart = inject(CartService);
   auth = inject(AuthService);
   tickerService = inject(TickerService);
-  scrollToInquiry(event: Event): void {
-    const target = document.getElementById('inquiry');
+
+  scrollToSection(sectionId: string, event: Event): void {
+    const target = document.getElementById(sectionId);
     if (target) {
       event.preventDefault();
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
