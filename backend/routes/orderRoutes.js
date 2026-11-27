@@ -3,7 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const { verifyToken, authorizeRoles } = require('../middleware/auth');
-const { sendOrderStatusEmail } = require('../services/emailService');
+const { sendOrderStatusEmail } = require('../services/email');
 
 // POST /api/orders - Public customer coffee checkout
 router.post('/', async (req, res) => {

@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const User = require('../models/User');
-const Role = require('../models/Role');
+const Role = require('../models/roles');
 const { verifyToken, authorizeRoles } = require('../middleware/auth');
 
 const router = express.Router();

@@ -15,7 +15,7 @@ const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const configRoutes = require('./routes/configRoutes');
 const { startNceTuesdayCron } = require('./jobs/nceSync');
-const { startReviewEmailCron } = require('./services/emailService');
+const { startReviewEmailCron } = require('./services/email');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
