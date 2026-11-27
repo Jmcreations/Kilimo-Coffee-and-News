@@ -5,11 +5,21 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export type UserRole = string;
+
 export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  role: 'client' | 'delivery' | 'journalist' | 'admin' | 'super_admin' | string;
+  role: UserRole;
+}
+
+export interface StaffUser {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  role: UserRole;
 }
 
 interface AuthResponse {
@@ -30,7 +40,7 @@ export class AuthService {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
 
-  private getApiBase(): string {
+  getApiBase(): string {
     const raw = environment.apiUrl.trim().replace(/\/+$/, '');
     return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
   }
@@ -55,6 +65,18 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.getToken() && !!this.currentUser();
+  }
+
+  hasRole(...roles: UserRole[]): boolean {
+    const role = this.currentUser()?.role.toLowerCase().trim();
+    return role !== undefined &&
+      (roles.some((allowedRole) => allowedRole.toLowerCase().trim() === role) ||
+        (role === 'super_admin' &&
+          roles.some((allowedRole) => allowedRole.toLowerCase().trim() === 'admin')));
+  }
+
+  redirectByRole(): void {
+    void this.router.navigate([this.getPortalRoute()]);
   }
 
   getPortalRoute(role?: string): string {
