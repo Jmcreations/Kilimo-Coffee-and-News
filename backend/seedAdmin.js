@@ -3,35 +3,53 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 require('dotenv').config();
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const User = require('./models/User');
 
-async function seedAdmin() {
+async function bootstrapSuperAdmin() {
+  const email = (process.env.SUPER_ADMIN_EMAIL || '').trim().toLowerCase();
+  const password = process.env.SUPER_ADMIN_PASSWORD || '';
+  const name = (process.env.SUPER_ADMIN_NAME || 'Justin').trim();
+
+  if (!process.env.MONGO_URI) {
+    console.error('MONGO_URI is missing in environment variables.');
+    process.exit(1);
+  }
+
+  if (!email || !password || password.length < 8) {
+    console.error(
+      'Set SUPER_ADMIN_EMAIL and SUPER_ADMIN_PASSWORD (at least 8 characters) in your .env or Northflank environment before running this script.'
+    );
+    process.exit(1);
+  }
+
   try {
     await mongoose.connect(process.env.MONGO_URI);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const email = (process.env.ADMIN_EMAIL || 'admin@kilimocoffee.co.ke').toLowerCase();
-    const password = process.env.ADMIN_PASSWORD || 'KilimoAdmin@2026';
-
-    const existing = await User.findOne({ email });
-    if (existing) {
-      console.log(`Admin user already exists: ${email}`);
-      process.exit(0);
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      existingUser.name = name;
+      existingUser.password = hashedPassword;
+      existingUser.role = 'super_admin';
+      await existingUser.save();
+      console.log(`Updated existing account (${email}) to super_admin.`);
+    } else {
+      await User.create({
+        name,
+        email,
+        password: hashedPassword,
+        authProvider: 'local',
+        role: 'super_admin'
+      });
+      console.log(`Created super_admin account for ${email}.`);
     }
-
-    await User.create({
-      name: 'Henry Kinyua',
-      email,
-      password,
-      role: 'admin',
-      phone: '+254700000000'
-    });
-
-    console.log(`Created initial Admin account -> Email: ${email} | Password: ${password}`);
-    process.exit(0);
   } catch (err) {
-    console.error('Failed to seed admin:', err);
+    console.error('Failed to bootstrap super_admin:', err.message);
     process.exit(1);
+  } finally {
+    await mongoose.disconnect();
   }
 }
 
-seedAdmin();
+bootstrapSuperAdmin();

@@ -27,11 +27,16 @@ export const routes: Routes = [
       import('./components/login/login').then((m) => m.Login)
   },
   {
+    path: 'sign-up',
+    loadComponent: () =>
+      import('./components/login/login').then((m) => m.Login)
+  },
+  {
     path: 'post-news',
     loadComponent: () =>
       import('./components/post-news/post-news').then((m) => m.PostNews),
     canActivate: [roleGuard],
-    data: { roles: ['journalist', 'admin'] }
+    data: { roles: ['journalist', 'admin', 'super_admin'] }
   },
   {
     path: 'delivery-orders',
@@ -40,7 +45,7 @@ export const routes: Routes = [
         (m) => m.DeliveryOrders
       ),
     canActivate: [roleGuard],
-    data: { roles: ['delivery', 'admin'] }
+    data: { roles: ['delivery', 'admin', 'super_admin'] }
   },
   {
     path: 'admin',
@@ -49,7 +54,7 @@ export const routes: Routes = [
         (m) => m.AdminDashboard
       ),
     canActivate: [roleGuard],
-    data: { roles: ['admin'] }
+    data: { roles: ['admin', 'super_admin'] }
   },
   { path: '**', redirectTo: '' }
 ];

@@ -16,6 +16,7 @@ import { StaffNav } from '../staff-nav/staff-nav';
   styleUrl: './post-news.scss'
 })
 export class PostNews implements OnInit {
+  private readonly maxImageSizeBytes = 8 * 1024 * 1024;
   private newsService = inject(NewsService);
   auth = inject(AuthService);
   navHistory = inject(NavigationHistoryService);
@@ -75,7 +76,17 @@ export class PostNews implements OnInit {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+      const file = input.files[0];
+      if (file.size > this.maxImageSizeBytes) {
+        this.selectedFile = null;
+        this.previewImageUrl.set(null);
+        input.value = '';
+        this.errorMessage.set('Image must be 8 MB or smaller.');
+        return;
+      }
+
+      this.errorMessage.set('');
+      this.selectedFile = file;
       const reader = new FileReader();
       reader.onload = () => this.previewImageUrl.set(reader.result as string);
       reader.readAsDataURL(this.selectedFile);
@@ -202,7 +213,12 @@ export class PostNews implements OnInit {
         this.submitting.set(false);
         this.uploadProgress.set(0);
         this.uploadStatusText.set('');
-        this.errorMessage.set(err.error?.message || 'Failed to publish article.');
+        this.errorMessage.set(
+          err.error?.message ||
+            (err.status === 0
+              ? 'The upload connection was interrupted. Check your connection and try again.'
+              : 'Failed to publish article.')
+        );
       }
     });
   }

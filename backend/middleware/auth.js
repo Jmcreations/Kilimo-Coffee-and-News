@@ -1,34 +1,44 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'kilimo_coffee_fallback_secret_2026';
-
-// Verify Bearer JWT on protected routes
 function verifyToken(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Authentication token required.' });
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Authentication required. No token provided.' });
   }
 
-  const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // { id, name, email, role }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Invalid or expired session token.' });
   }
 }
 
-// Restrict endpoint to one or more roles ('admin', 'journalist', 'delivery')
 function authorizeRoles(...allowedRoles) {
   return (req, res, next) => {
-    if (!req.user || !allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({
-        message: `Access denied. Required role: ${allowedRoles.join(' or ')}.`
-      });
+    if (!req.user || !req.user.role) {
+      return res.status(403).json({ message: 'Access denied.' });
     }
+
+    const userRole = req.user.role;
+
+    // Super admin inherits full access wherever admin privileges are accepted
+    if (userRole === 'super_admin' && (allowedRoles.includes('admin') || allowedRoles.includes('super_admin'))) {
+      return next();
+    }
+
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({ message: 'You do not have permission to perform this action.' });
+    }
+
     next();
   };
 }
 
-module.exports = { verifyToken, authorizeRoles, JWT_SECRET };
+module.exports = {
+  verifyToken,
+  authorizeRoles
+};

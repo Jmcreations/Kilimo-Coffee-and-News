@@ -24,6 +24,29 @@ function canManageArticle(user, article) {
   return false;
 }
 
+function handleUploadError(err, req, res, next) {
+  if (req.aborted || err.message === 'Request aborted' || err.message === 'Request closed') {
+    console.warn('News image upload was interrupted by the client.');
+    if (!res.headersSent && !res.destroyed) {
+      return res.status(400).json({
+        message: 'The upload was interrupted. Check your connection and try again.'
+      });
+    }
+    return;
+  }
+
+  if (err instanceof multer.MulterError) {
+    const status = err.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+    const message =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'Image must be 8 MB or smaller.'
+        : 'The uploaded image could not be processed.';
+    return res.status(status).json({ message });
+  }
+
+  next(err);
+}
+
 // GET /api/news
 router.get('/', async (_req, res) => {
   try {
@@ -103,7 +126,8 @@ router.post(
     } catch (err) {
       res.status(500).json({ message: 'Failed to publish article', error: err.message });
     }
-  }
+  },
+  handleUploadError
 );
 
 // PUT /api/news/:id
@@ -155,7 +179,8 @@ router.put(
     } catch (err) {
       res.status(500).json({ message: 'Failed to update article', error: err.message });
     }
-  }
+  },
+  handleUploadError
 );
 
 // DELETE /api/news/:id

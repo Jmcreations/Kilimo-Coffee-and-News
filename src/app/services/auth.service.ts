@@ -9,7 +9,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
-  role: 'client' | 'journalist' | 'admin';
+  role: 'client' | 'delivery' | 'journalist' | 'admin' | 'super_admin' | string;
 }
 
 interface AuthResponse {
@@ -57,6 +57,24 @@ export class AuthService {
     return !!this.getToken() && !!this.currentUser();
   }
 
+  getPortalRoute(role?: string): string {
+    const normalizedRole = (role || this.currentUser()?.role || '').toLowerCase().trim();
+
+    if (normalizedRole === 'super_admin' || normalizedRole === 'admin') {
+      return '/admin';
+    }
+    if (normalizedRole === 'journalist') {
+      return '/post-news';
+    }
+    if (normalizedRole === 'delivery') {
+      return '/delivery-orders';
+    }
+    if (normalizedRole && normalizedRole !== 'client') {
+      return '/admin';
+    }
+    return '/purchase-coffee';
+  }
+
   login(email: string, password: string) {
     return this.http
       .post<AuthResponse>(`${this.authUrl}/login`, { email, password })
@@ -81,14 +99,7 @@ export class AuthService {
       localStorage.setItem('kilimo_user', JSON.stringify(res.user));
     }
     this.currentUser.set(res.user);
-
-    if (res.user.role === 'admin') {
-      this.router.navigate(['/admin']);
-    } else if (res.user.role === 'journalist') {
-      this.router.navigate(['/post-news']);
-    } else {
-      this.router.navigate(['/purchase-coffee']);
-    }
+    this.router.navigate([this.getPortalRoute(res.user.role)]);
   }
 
   logout(): void {
